@@ -1,3 +1,5 @@
+.. _tutorial:
+
 Tutorial
 ~~~~~~~~
 
@@ -12,22 +14,22 @@ Getting started
 ---------------
 
 The first compulsory step to obtain a plot is setting the **engine**, using function
-:func:`set_engine <pyranges_plot.set_engine>` after importing. We also **register** the plot function
-using :func:`register_plot <pyranges_plot.register_plot>`, which is optional but convenient:
+:func:`set_engine <pyrangeyes.set_engine>` after importing. We also **register** the plot function
+using :func:`register_plot <pyrangeyes.register_plot>`, which is optional but convenient:
 it allows to use the plot function directly from PyRanges objects (further explained later).
 
-    >>> import pyranges_plot as prp
-    >>> prp.set_engine("plotly")  # possible engines: "plotly" and "matplotlib"
-    >>> prp.register_plot()
+    >>> import pyrangeyes as pre
+    >>> pre.set_engine("plotly")  # possible engines: "plotly" and "matplotlib"
+    >>> pre.register_plot()
 
 
-Pyranges Plot centralizes the interface to producing graphics in
-the :func:`plot <pyranges_plot.plot>` function. It offers plenty of options to
+Pyrangeyes centralizes the interface to producing graphics in
+the :func:`plot <pyrangeyes.plot>` function. It offers plenty of options to
 customize the appearance of the plot, showcased in this tutorial.
-To that end, we will use some example data included in the Pyranges Plot package.
+To that end, we will use some example data included in the Pyrangeyes package.
 Yet, any PyRanges object can be used, e.g. loaded from gff, gtf, bam files.
 
-    >>> p = prp.example_data.p1
+    >>> p = pre.example_data.p1
     >>> print(p)
       index  |      Chromosome  Strand      Start      End  transcript_id    feature1    feature2
       int64  |           int64  object      int64    int64  object           object      object
@@ -43,11 +45,11 @@ Yet, any PyRanges object can be used, e.g. loaded from gff, gtf, bam files.
     PyRanges with 8 rows, 7 columns, and 1 index columns.
     Contains 3 chromosomes and 2 strands.
 
-By default, :func:`plot <pyranges_plot.plot>` produces an interactive plot. If the Matplotlib engine is selected,
+By default, :func:`plot <pyrangeyes.plot>` produces an interactive plot. If the Matplotlib engine is selected,
 a window appears. If the Plotly engine is selected, a server is automatically opened, and
 an address is printed in the console. The plot can be accessed by opening this address in a browser.
 
-    >>> prp.plot(p)
+    >>> pre.plot(p)
 
 .. image:: images/prp_rtd_01.png
 
@@ -59,9 +61,9 @@ Interactive navigation is intuitive:
 * Inspect the rest of buttons on the top-right to see other available actions.
 
 To create a pdf or png image file instead of opening an interactive plot,
-use the ``to_file`` parameter of :func:`plot <pyranges_plot.plot>`.
+use the ``to_file`` parameter of :func:`plot <pyrangeyes.plot>`.
 
-    >>> prp.plot(p, to_file="my_plot.png")
+    >>> pre.plot(p, to_file="my_plot.png")
 
 Because we **registered** the plot function, we can also invoke it like a method of the PyRanges object, as
 ``PyRanges.plot(...)``. This is equivalent to the previous code:
@@ -72,25 +74,25 @@ In the figure above, intervals are displayed individually, i.e. each PyRanges ro
 To link the intervals instead, as to represent a transcript composed of exons, use the ``id_column`` parameter,
 indicating the column name that defines the groups of intervals.
 
-    >>> prp.plot(p, id_col="transcript_id")
+    >>> pre.plot(p, id_col="transcript_id")
 
 .. image:: images/prp_rtd_02.png
 
 Because the ``id_col`` parameter is used frequently, it can be set as default for all plots using function
-:func:`set_id_col <pyranges_plot.set_id_col>`. The following code is equivalent to the previous one:
+:func:`set_id_col <pyrangeyes.set_id_col>`. The following code is equivalent to the previous one:
 
-    >>> prp.set_id_col("transcript_id")
-    >>> prp.plot(p)
+    >>> pre.set_id_col("transcript_id")
+    >>> pre.plot(p)
 
 
 Selecting what to plot
 ----------------------
 The data above has only 4 interval groups (hereafter, "transcripts") so all of them were included in the plot.
 By default, a **maximum of 25 transcripts** are plotted, customizable with the ``max_shown`` parameter of
-:func:`plot <pyranges_plot.plot>`.
+:func:`plot <pyrangeyes.plot>`.
 Below, we can set the maximum number of transcripts show as 2. Note the warning shown:
 
-    >>> prp.plot(p, max_shown=2)
+    >>> pre.plot(p, max_shown=2)
 
 .. image:: images/prp_rtd_03.png
 
@@ -110,56 +112,56 @@ The ``limits`` parameter accepts different input types:
 
 * PyRanges object, wherein Start and End columns define the limits for the corresponding Chromosome.
 
-    >>> prp.plot(p, limit, 100), 2: (60, 20})
+    >>> pre.plot(p, limit, 100), 2: (60, 20})
 
 .. image:: images/prp_rtd_04.png
 
 To plot with specified limits, use the following code:
 
-    >>> prp.plot(p, limits=(0,300))
+    >>> pre.plot(p, limits=(0,300))
 
 .. image:: images/prp_rtd_05.png
 
 Coloring
 --------
 By default, the intervals are **colored** according to the ID column
-(``transcript_id`` in this case,  previously set as default with :func:`set_id_col <pyranges_plot.set_id_col>`).
+(``transcript_id`` in this case,  previously set as default with :func:`set_id_col <pyrangeyes.set_id_col>`).
 
 We can select any other column to color the intervals by using the ``color_col`` parameter
-of :func:`plot <pyranges_plot.plot>`.
+of :func:`plot <pyrangeyes.plot>`.
 For example, let's color by the Strand column:
 
-    >>> prp.plot(p, color_col="Strand")
+    >>> pre.plot(p, color_col="Strand")
 
 .. image:: images/prp_rtd_06.png
 
 Now the "+" strand transcripts are displayed in one color and the ones on the "-" strand in another color.
-Note that pyranges_plot used its default color scheme, and mapped each value in the  ``color_col`` column to a color.
+Note that pyrangeyes used its default color scheme, and mapped each value in the  ``color_col`` column to a color.
 
-The  **colormap** parameter of :func:`plot <pyranges_plot.plot>` centralizes coloring customization.
+The  **colormap** parameter of :func:`plot <pyrangeyes.plot>` centralizes coloring customization.
 It is a versatile parameter, accepting many different types of input.
 Using a dictionary allows to exert full control over the coloring, explicitly setting each value-color pair:
 
-    >>> prp.plot(p, color_col="Strand",
+    >>> pre.plot(p, color_col="Strand",
     ...          colormap={"+": "green", "-": "red"})
 
 .. image:: images/prp_rtd_07.png
 
 Alternatively, the user may just define the sequence of colors used
-(letting pyranges_plot pick which color to assign to each value).
+(letting pyrangeyes pick which color to assign to each value).
 One can provide a list of colors in hex or rgb; or a string recognized as the name of an available
 Matplotlib or Plotly colormap;
 or an actual Matplotlib or Plotly colormap object. Below, we invoke the "Dark2" Matplotlib colormap:
 
-    >>> prp.plot(p, colormap="Dark2")
+    >>> pre.plot(p, colormap="Dark2")
 
 .. image:: images/prp_rtd_08.png
 
 To improve the clarity of the plot, we can enable a legend that labels each color, making it easier 
 to interpret the intervals based on their assigned colors. This can be done by setting the 
-**legend** parameter of :func:`plot <pyranges_plot.plot>` as True:
+**legend** parameter of :func:`plot <pyrangeyes.plot>` as True:
 
-    >>> prp.plot(p, colormap="Dark2", legend=True)
+    >>> pre.plot(p, colormap="Dark2", legend=True)
 
 .. image:: images/prp_rtd_20.png
 
@@ -174,25 +176,25 @@ A wide range of **options** are available to customize appearance, as summarized
 
 .. image:: images/options_fig_wm.png
 
-These options can be provided as parameters to the :func:`plot <pyranges_plot.plot>` function, or
+These options can be provided as parameters to the :func:`plot <pyrangeyes.plot>` function, or
 set as default beforehand. Let's see an example of providing them as parameters:
 
-    >>> prp.plot(p, plot_bkg="rgb(173, 216, 230)", plot_border="#808080", title_color="magenta")
+    >>> pre.plot(p, plot_bkg="rgb(173, 216, 230)", plot_border="#808080", title_color="magenta")
 
 .. image:: images/prp_rtd_15.png
 
-To instead set these options as default, use the :func:`set_options <pyranges_plot.set_options>` function:
+To instead set these options as default, use the :func:`set_options <pyrangeyes.set_options>` function:
 
-    >>> prp.set_options('plot_bkg', 'rgb(173, 216, 230)')
-    >>> prp.set_options('plot_border', '#808080')
-    >>> prp.set_options('title_color', 'magenta')
-    >>> prp.plot(p)  # this will now open a plot identical to the previous one
+    >>> pre.set_options('plot_bkg', 'rgb(173, 216, 230)')
+    >>> pre.set_options('plot_border', '#808080')
+    >>> pre.set_options('title_color', 'magenta')
+    >>> pre.plot(p)  # this will now open a plot identical to the previous one
 
 To inspect the current default options, use the
-:func:`print_options <pyranges_plot.print_options>` function.
+:func:`print_options <pyrangeyes.print_options>` function.
 Note that any modified values from the built-in defaults will be marked with an asterisk (*):
 
-    >>> prp.print_options()
+    >>> pre.print_options()
     +------------------+--------------------+---------+--------------------------------------------------------------+
     |     Feature      |       Value        | Edited? |                         Description                          |
     +------------------+--------------------+---------+--------------------------------------------------------------+
@@ -248,22 +250,22 @@ Note that any modified values from the built-in defaults will be marked with an 
     |                  |                    |         | positions or base pairs.                                     |
     +------------------+--------------------+---------+--------------------------------------------------------------+
 
-To reset options to built-in defaults,  use :func:`reset_options <pyranges_plot.reset_options>`.
+To reset options to built-in defaults,  use :func:`reset_options <pyrangeyes.reset_options>`.
 By default, it will reset all options. Providing arguments, you can select which options to reset:
 
-    >>> prp.reset_options('plot_background')  # reset one feature
-    >>> prp.reset_options(['plot_border', 'title_color'])  # reset a few features
-    >>> prp.reset_options()  # reset all features
+    >>> pre.reset_options('plot_background')  # reset one feature
+    >>> pre.reset_options(['plot_border', 'title_color'])  # reset a few features
+    >>> pre.reset_options()  # reset all features
 
 
 Built-in and custom themes
 --------------------------
 
-A pyranges_plot **theme** is a collection of options for appearance customization (those displayed above
-with :func:`print_options <pyranges_plot.print_options>`) each with a set value.
-Themes are implemented as dictionaries, that are passed to the :func:`set_theme <pyranges_plot.set_theme>` function.
+A pyrangeyes **theme** is a collection of options for appearance customization (those displayed above
+with :func:`print_options <pyrangeyes.print_options>`) each with a set value.
+Themes are implemented as dictionaries, that are passed to the :func:`set_theme <pyrangeyes.set_theme>` function.
 In practice, setting a theme is equivalent to setting options like we did above
-with :func:`set_options <pyranges_plot.set_options>`, but with a single command.
+with :func:`set_options <pyrangeyes.set_options>`, but with a single command.
 
 For example, below we create a theme corresponding to the appearance of our last plot:
 
@@ -272,36 +274,36 @@ For example, below we create a theme corresponding to the appearance of our last
     ...     "plot_border": "#808080",
     ...     "title_color": "magenta"
     ... }
-    >>> prp.set_theme(my_theme)
-    >>> prp.plot(p)  # this will now open a plot identical to the previous one
+    >>> pre.set_theme(my_theme)
+    >>> pre.plot(p)  # this will now open a plot identical to the previous one
 
-Pyranges_plot comes with a few built-in themes, listed in the :func:`set_theme <pyranges_plot.set_theme>` function's
+Pyrangeyes comes with a few built-in themes, listed in the :func:`set_theme <pyrangeyes.set_theme>` function's
 documentation. For example, here's the "dark" theme:
 
-    >>> prp.set_theme('dark')
-    >>> prp.plot(p)
+    >>> pre.set_theme('dark')
+    >>> pre.plot(p)
 
 .. image:: images/prp_rtd_16.png
 
-To reset the theme, you can resort again to :func:`reset_options <pyranges_plot.reset_options>`.
+To reset the theme, you can resort again to :func:`reset_options <pyrangeyes.reset_options>`.
 
 
 
 Managing space: packed/unpacked, shrink
 ---------------------------------------
 
-By default, pyranges_plot tries to save as much vertical space as possible,
+By default, pyrangeyes tries to save as much vertical space as possible,
 so the transcripts are placed one beside the other, in a "packed" disposition.
 To instead display one transcript per row, set the ``packed`` parameter as ``False``:
 
 .. code-block::
 
-    prp.plot(p, packed=False, legend = False)
+    pre.plot(p, packed=False, legend = False)
 
 .. image:: images/prp_rtd_09.png
 
 
-Pyranges_plot offers the option to reduce horizontal space, occupied by introns or intergenic regions,
+Pyrangeyes offers the option to reduce horizontal space, occupied by introns or intergenic regions,
 by activating the ``shrink`` parameter.
 The  ``shrink_threshold`` determines the minimum length of a region without visible intervals to be shrunk.
 When a float is provided, it will be interpreted as a fraction of the visible coordinate limits,
@@ -309,7 +311,7 @@ while when an int is given it will be interpreted as number of base pairs.
 
 .. code-block::
 
-    ppp = prp.example_data.p3
+    ppp = pre.example_data.p3
     print(ppp)
 
 
@@ -333,13 +335,13 @@ while when an int is given it will be interpreted as number of base pairs.
 
 .. code-block::
 
-    prp.plot(ppp, shrink=True)
+    pre.plot(ppp, shrink=True)
 
 .. image:: images/prp_rtd_13.png
 
 .. code-block::
 
-    prp.plot(ppp, shrink=True, shrink_threshold=0.2)
+    pre.plot(ppp, shrink=True, shrink_threshold=0.2)
 
 .. image:: images/prp_rtd_14.png
 
@@ -355,7 +357,7 @@ and contain "exon" or "CDS" values:
 
 .. code-block::
 
-    pp = prp.example_data.p2
+    pp = pre.example_data.p2
     print(pp)
 
 
@@ -379,7 +381,7 @@ and contain "exon" or "CDS" values:
 
 .. code-block::
 
-    prp.plot(pp, thick_cds=True)
+    pre.plot(pp, thick_cds=True)
 
 .. image:: images/prp_rtd_12.png
 
@@ -392,16 +394,16 @@ In some cases, the data intervals might overlap. An example could be when some i
 the PyRanges object correspond to exons and others correspond to "GCA" appearances. For such
 cases, the ``thickness_col`` and ``depth_col`` parameters are implemented.
 
-The :func:`plot <pyranges_plot.plot>` function can accept more than one PyRanges object, provided as a list.
-In this case, pyranges_plot will display them in the same plot, one on top of the other, for each common chromosome.
+The :func:`plot <pyrangeyes.plot>` function can accept more than one PyRanges object, provided as a list.
+In this case, pyrangeyes will display them in the same plot, one on top of the other, for each common chromosome.
 The intervals of different PyRanges object are separated by a vertical spacer.
 
 Let's see an example with two PyRanges objects, mapping the occurrences of two amino acids, alanine and cysteine:
 
 .. code-block::
 
-    p_ala = prp.example_data.p_ala
-    p_cys = prp.example_data.p_cys
+    p_ala = pre.example_data.p_ala
+    p_cys = pre.example_data.p_cys
 
     print(p_ala)
     print(p_cys)
@@ -441,7 +443,7 @@ Let's see an example with two PyRanges objects, mapping the occurrences of two a
 
 .. code-block::
 
-    prp.plot([p_ala, p_cys])
+    pre.plot([p_ala, p_cys])
 
 .. image:: images/prp_rtd_17.png
 
@@ -450,7 +452,7 @@ allows to provide a list of strings, one for each PyRanges object, to be display
 
 .. code-block::
 
-    prp.plot(
+    pre.plot(
         [p_ala, p_cys],
         y_labels=["pr Alanine", "pr Cysteine"]
     )
@@ -468,7 +470,7 @@ closer the interval will be to the top of the plot, ensuring its visibility:
 
 .. code-block::
 
-    prp.plot(
+    pre.plot(
         [p_ala, p_cys],
         id_col="id",
         y_labels=["pr Alanine", "pr Cysteine"],
@@ -483,7 +485,7 @@ determine thickness of the corresponding intervals:
 
 .. code-block::
 
-    prp.plot(
+    pre.plot(
         [p_ala, p_cys],
         id_col="id",
         color_col="trait1",
@@ -509,7 +511,7 @@ to as {chrom}. An example could be the following:
 
 .. code-block::
 
-    prp.plot(
+    pre.plot(
         p,
         tooltip="first feature: {feature1}\nsecond feature: {feature2}",
         title_chr='Chr: {chrom}'
@@ -520,8 +522,8 @@ to as {chrom}. An example could be the following:
 Dealing with vcf files
 ----------------------
 
-While PyRanges Plot is widely recognized for its robust capabilities in visualizing and managing 
-gene annotations, its functionality extends well beyond this. PyRanges Plot also provides 
+While Pyrangeyes is widely recognized for its robust capabilities in visualizing and managing 
+gene annotations, its functionality extends well beyond this. Pyrangeyes also provides 
 versatile tools for working with Variant Call Format (VCF) files, a standard file format used 
 for storing genetic variant information. This includes parsing VCF files, handling complex metadata 
 and visualizing genetic variants alongside gene annotations.
@@ -532,8 +534,8 @@ sapiens chromosome 1:
 
 .. code-block::
 
-    >>> prp.set_engine("plotly")
-    >>> ann = prp.example_data.ncbi_gff()
+    >>> pre.set_engine("plotly")
+    >>> ann = pre.example_data.ncbi_gff()
     >>> ann
     index    |    Chromosome    Source         Feature     Start      End        Score     Strand      Frame     frame     ID                          logic_name           Name             ...
     int64    |    category      object         category    int64      int64      object    category    object    object    object                      object               object           ...
@@ -555,7 +557,7 @@ provided as part of the example dataset and can be loaded into memory as follows
 
 .. code-block::
 
-    >>> vcf = prp.example_data.ncbi_vcf()
+    >>> vcf = pre.example_data.ncbi_vcf()
     >>> vcf
     index    |    Chromosome    Start     ID            REF       ALT       QUAL      FILTER      ...
     int64    |    object        int32     object        object    object    object    category    ...
@@ -573,9 +575,9 @@ provided as part of the example dataset and can be loaded into memory as follows
     Contains 25 chromosomes.
 
 Above, we leveraged the builtin example data. In real use cases, you would load data from a file, 
-using :func:`read_vcf() <pyranges_plot.vcf.read_vcf>`.
+using :func:`read_vcf() <pyrangeyes.vcf.read_vcf>`.
 
-By default, :func:`read_vcf() <pyranges_plot.vcf.read_vcf>` generates a PyRanges object that includes all the columns extracted 
+By default, :func:`read_vcf() <pyrangeyes.vcf.read_vcf>` generates a PyRanges object that includes all the columns extracted 
 from the VCF file. Additionally, it adds or modifies the following three columns, required to be a Pyranges object:
 
 * **Chromosome**: The chromosome name.
@@ -586,11 +588,11 @@ The INFO column in the VCF file contains a wealth of additional information, oft
 pairs separated by semicolons. However, in its current form, this column is not readily interpretable 
 or easy to analyze due to its compact format. Fortunately, you can easily manipulate the INFO column to 
 expand and extract this embedded information into separate, more accessible columns using the 
-:func:`split_fields() <pyranges_plot.vcf.split_fields>` function:
+:func:`split_fields() <pyrangeyes.vcf.split_fields>` function:
 
 .. code-block::
 
-    >>> vcf_split = prp.vcf.split_fields(vcf,target_cols="INFO",field_sep=";")
+    >>> vcf_split = pre.vcf.split_fields(vcf,target_cols="INFO",field_sep=";")
     >>> vcf_split
     index    |    Chromosome    Start     ID            REF       ALT       QUAL      FILTER      End       INFO_0     INFO_1     INFO_2                  INFO_3                  ...
     int64    |    object        int32     object        object    object    object    category    int32     object     object     object                  object                  ...
@@ -618,7 +620,7 @@ directly from the VCF file:
 
 .. code-block::
 
-    >>> vcf_split = prp.vcf.split_fields(vcf,target_cols="INFO",field_sep=";",col_name_sep="=")
+    >>> vcf_split = pre.vcf.split_fields(vcf,target_cols="INFO",field_sep=";",col_name_sep="=")
     >>> vcf_split
     index    |    Chromosome    Start     ID            REF       ALT       QUAL      FILTER      End       INFO_0     TSA       INFO_2                  INFO_3                  ...
     int64    |    object        int32     object        object    object    object    category    int32     object     object    object                  object                  ...
@@ -681,13 +683,13 @@ Similarly, we need to focus on the SNPs within the selected region:
 
 Finally, we are ready to visualize our data. By combining the gene annotation from the selected genomic region with 
 the prepared PyRanges object representing the SNPs, we can generate an insightful plot that overlays both datasets. 
-Using the prp.plot function, you can pass the gene annotations and the SNPs together to create a detailed visualization. 
+Using the pre.plot function, you can pass the gene annotations and the SNPs together to create a detailed visualization. 
 or this, simply specify the id_col parameter to indicate the column containing unique identifiers, such as the SNP IDs. 
 Here's how you can do it:
 
 .. code-block::
 
-    >>> prp.plot([reg,coord_vcf],id_col='ID')
+    >>> pre.plot([reg,coord_vcf],id_col='ID')
 
 .. image:: images/prp_rtd_21.png
 
@@ -699,12 +701,12 @@ while omitting it for VCF data:
 
     >>> reg["Text_col"]=reg["Parent"]
     >>> coord_vcf['Text_col'] = ''
-    >>> prp.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}')
+    >>> pre.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}')
 
 .. image:: images/prp_rtd_22.png
 
 However, genome variant analysis is not limited to simply identifying the positions of variants. You might also want to 
-explore the distribution of variants by analyzing the number of variants at each position. With PyRanges Plot, you can achieve 
+explore the distribution of variants by analyzing the number of variants at each position. With Pyrangeyes, you can achieve 
 this by first creating a scatterplot that visualizes these counts, and then including it as input in the **add_aligned_plots**
 parameter:
 
@@ -718,7 +720,7 @@ parameter:
     ...         mode='markers'
     ...     ),{'title': 'Scatterplot', 'title_size': 18, 'title_color': 'green'})
     ... ]
-    >>> prp.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=aligned_traces)
+    >>> pre.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=aligned_traces)
 
 .. image:: images/prp_rtd_23.png
 
@@ -749,11 +751,11 @@ We already used the options to customise the title., let's now customise the y a
     ...              mode='markers'
     ...          ),{'title': 'Scatterplot', 'title_size': 18, 'title_color': 'green', 'height': 0.5, 'y_space': 0.5})
     ... ]
-    >>> prp.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=aligned_traces)
+    >>> pre.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=aligned_traces)
 
 .. image:: images/prp_rtd_24.png
 
-If your dataset is too large to manually create a Plotly scatterplot, Pyranges Plot offers a convenient function called :func:`make_scatter() <pyranges_plot.make_scatter>`. 
+If your dataset is too large to manually create a Plotly scatterplot, Pyrangeyes offers a convenient function called :func:`make_scatter() <pyrangeyes.make_scatter>`. 
 This function allows you to automatically generate a scatterplot directly from your data, introducing the numeric column for the
 y axis.
 
@@ -768,12 +770,12 @@ Next, we will use this column to define the y-axis for the plot:
 
 .. code-block::
 
-    >>> aligned = prp.make_scatter(coord_vcf, y='Count')
-    >>> prp.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=[aligned])
+    >>> aligned = pre.make_scatter(coord_vcf, y='Count')
+    >>> pre.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=[aligned])
 
 .. image:: images/prp_rtd_25.png
 
-The :func:`make_scatter() <pyranges_plot.make_scatter>` function includes several options that allow you to customize your plot to better fit your needs. For instance, 
+The :func:`make_scatter() <pyrangeyes.make_scatter>` function includes several options that allow you to customize your plot to better fit your needs. For instance, 
 you can use the following parameters:
 
 * color_by: Specify a column from your dataset to color the markers based on its values.
@@ -789,16 +791,16 @@ In our case we are going to color our genetic variants by its type (**TSA** colu
 
 .. code-block::
 
-    >>> aligned = prp.make_scatter(coord_vcf, y='Count',color_by="TSA", title="Human Variants", title_color="Magenta",title_size=18)
-    >>> prp.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=[aligned])
+    >>> aligned = pre.make_scatter(coord_vcf, y='Count',color_by="TSA", title="Human Variants", title_color="Magenta",title_size=18)
+    >>> pre.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=[aligned])
 
 .. image:: images/prp_rtd_26.png
 
-Enhancing PyRanges Plot with External Visualizations
+Enhancing Pyrangeyes with External Visualizations
 ----------------------------------------------------
 
 A typical genomic analysis often involves more than just visualizing genomic intervals. Researchers frequently need to incorporate additional 
-plots—potentially using different axes or plot types—to provide context or enhance the interpretation of results.  PyRanges Plot allows you 
+plots—potentially using different axes or plot types—to provide context or enhance the interpretation of results. Pyrangeyes allows you 
 to export your plot to a variable by using the **return_plot** parameter. This parameter accepts two values:
 
 * app: Returns a Dash object, which can be integrated into a custom dashboard.
@@ -808,19 +810,19 @@ Example:
 
 .. code-block::
 
-    >>> p = prp.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}', return_plot='app')
+    >>> p = pre.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}', return_plot='app')
     >>> p
     <dash.dash.Dash object at 0x73321d74e990>
 
 Imagine you have your VCF plot and want to visualize how many variants are present in your dataset. For instance, first you can export 
-the pyranges plot dash object and then you can create a pie chart to display the distribution of variants by type and seamlessly 
-integrate it into the PyRanges Plot layout. Below is an example of a PyRanges Plot combined with a horizontally aligned pie chart:
+the Pyrangeyes dash object and then you can create a pie chart to display the distribution of variants by type and seamlessly 
+integrate it into the Pyrangeyes layout. Below is an example of a Pyrangeyes combined with a horizontally aligned pie chart:
 
 .. code-block::
     
     from dash import Dash, html, dcc
     
-    p = prp.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}', return_plot='app')
+    p = pre.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}', return_plot='app')
 
     # Example additional data
     variant_types = ["Missense", "Synonymous", "Nonsense", "Frameshift", "Splice Site"]
@@ -869,14 +871,14 @@ integrate it into the PyRanges Plot layout. Below is an example of a PyRanges Pl
     Hey! This code may cause issues if it is run in an IPython shell. 
     For a smoother experience, consider using a Jupyter Notebook instead.
 
-This layout can also be implemented vertically, allowing you to stack the PyRanges Plot and the pie chart for a clear and intuitive 
+This layout can also be implemented vertically, allowing you to stack the Pyrangeyes and the pie chart for a clear and intuitive 
 visualization. Here's how you can achieve this configuration:
 
 .. code-block::
 
     from dash import Dash, html, dcc
 
-    p = prp.plot([reg,p_vcf[0]],id_col='ID',text = '{Artificial_col}', return_plot='app')
+    p = pre.plot([reg,p_vcf[0]],id_col='ID',text = '{Artificial_col}', return_plot='app')
 
     # Example additional data
     variant_types = ["Missense", "Synonymous", "Nonsense", "Frameshift", "Splice Site"]
@@ -898,7 +900,7 @@ visualization. Here's how you can achieve this configuration:
     # Access and extend the existing Dash app's layout
     p.layout = html.Div(
         [
-            p.layout,  # Retain the existing layout from prp.plot
+            p.layout,  # Retain the existing layout from pre.plot
             html.Div(
                 [
                     dcc.Graph(figure=pie_chart, style={"margin-bottom": "20px"}),

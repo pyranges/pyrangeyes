@@ -175,9 +175,9 @@ def plot(
     Examples
     --------
 
-    >>> import pyranges as pr, pyranges_plot as prp
+    >>> import pyranges as pr, pyrangeyes as pre
 
-    >>> prp.set_engine('plotly')
+    >>> pre.set_engine('plotly')
 
     >>> p = pr.PyRanges({"Chromosome": [1]*5, "Strand": ["+"]*3 + ["-"]*2, "Start": [10,20,30,25,40], "End": [15,25,35,30,50], "transcript_id": ["t1"]*3 + ["t2"]*2}, "feature1": ["A", "B", "C", "A", "B"])
 

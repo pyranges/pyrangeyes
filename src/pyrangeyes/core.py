@@ -36,9 +36,9 @@ def set_id_col(name):
 
     Examples
     --------
-    >>> import pyranges_plot as prp
+    >>> import pyranges_plot as pre
 
-    >>> prp.set_id_col('gene_id')
+    >>> pre.set_id_col('gene_id')
 
     """
 
@@ -67,9 +67,9 @@ def set_engine(name):
 
     Examples
     --------
-    >>> import pyranges_plot as prp
+    >>> import pyrangeyes as pre
 
-    >>> prp.set_engine('plt')
+    >>> pre.set_engine('plt')
 
     """
 
@@ -99,9 +99,9 @@ def set_warnings(option):
 
     Examples
     --------
-    >>> import pyranges_plot as prp
+    >>> import pyrangeyes as pre
 
-    >>> prp.set_warnings(False)
+    >>> pre.set_warnings(False)
 
     """
 
@@ -130,10 +130,10 @@ def set_theme(name):
 
     Examples
     --------
-    >>> import pyranges_plot as prp
+    >>> import pyrangeyes as pre
 
-    >>> prp.set_theme("dark")
-    >>> prp.set_theme({"title_color": "goldenrod", "exon_height": 0.8})
+    >>> pre.set_theme("dark")
+    >>> pre.set_theme({"title_color": "goldenrod", "exon_height": 0.8})
 
     """
 
@@ -183,7 +183,7 @@ def set_options(varname, value=None):
     varname: {str, dict}
 
         Name of the variable to change, or dictionary with the {variable: value} pairs.
-        To check the available customizable options use prp.print_default().
+        To check the available customizable options use pre.print_default().
 
     value:
 
@@ -191,13 +191,13 @@ def set_options(varname, value=None):
 
     Examples
     --------
-    >>> import pyranges_plot as prp
+    >>> import pyrangeyes as pre
 
-    >>> prp.set_options('plot_background', 'magenta')
+    >>> pre.set_options('plot_background', 'magenta')
 
-    >>> prp.set_options('title_size', 20)
+    >>> pre.set_options('title_size', 20)
 
-    >>> prp.set_options({'plot_background': 'magenta', 'title_size': 20})
+    >>> pre.set_options({'plot_background': 'magenta', 'title_size': 20})
 
     """
 
@@ -272,15 +272,15 @@ def reset_options(varname="all"):
 
     Examples
     --------
-    >>> import pyranges_plot as prp
+    >>> import pyrangeyes as pre
 
-    >>> prp.reset_options()
+    >>> pre.reset_options()
 
-    >>> prp.reset_options('all')
+    >>> pre.reset_options('all')
 
-    >>> prp.reset_options('tag_bkg')
+    >>> pre.reset_options('tag_bkg')
 
-    >>> prp.reset_options(['title_size', 'tag_background'])
+    >>> pre.reset_options(['title_size', 'tag_background'])
 
     """
 

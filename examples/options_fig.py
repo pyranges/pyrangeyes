@@ -1,8 +1,8 @@
 import pyranges as pr
-import pyranges_plot as prp
+import pyrangeyes as pre
 
-prp.set_engine("plt")
-prp.set_id_col("transcript_id")
+pre.set_engine("plt")
+pre.set_id_col("transcript_id")
 
 p = pr.PyRanges(
     {
@@ -14,7 +14,7 @@ p = pr.PyRanges(
     }
 )
 
-prp.plot(
+pre.plot(
     p,
     colormap="Alphabet",
     arrow_size=0.03,

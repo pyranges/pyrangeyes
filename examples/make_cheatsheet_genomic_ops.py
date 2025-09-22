@@ -1,5 +1,5 @@
 import pyranges as pr
-import pyranges_plot as prp
+import pyrangeyes as pre
 import matplotlib.pyplot as plt
 
 # based on ggsci npg, with some modifications
@@ -123,14 +123,14 @@ tile_g["to_color"] = ["z"] * len(tile_g)
 
 
 # Get plot
-prp.set_engine("plt")
+pre.set_engine("plt")
 # customize left margin to fit titles
 ori_margin = plt.rcParams["figure.subplot.left"]
 plt.rcParams["figure.subplot.left"] = 0.4
 
 
 for ext in ["png"]:  # , 'pdf']:
-    prp.plot(
+    pre.plot(
         [
             r,
             pr.concat([b, r_upstream, r_downstream, r_complement]).reset_index(

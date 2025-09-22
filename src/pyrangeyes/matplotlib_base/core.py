@@ -1,6 +1,6 @@
 import os
 import ipywidgets as widgets
-from IPython.display import display, clear_output
+from IPython.display import display
 
 if os.environ.get("DISPLAY"):
     try:
@@ -43,7 +43,6 @@ if running_in_jupyter():
 
     def plt_popup_warning(txt, bkg="#1f1f1f", txtcol="white", botcol="#D6AA00"):
         # Widget Label i Botó
-        out = widgets.Output()
 
         label = widgets.HTML(
             value=f'<div style="color:{txtcol}; background-color:{bkg}; padding:10px; font-family:Sans; font-size:15px;">{txt}</div>'
@@ -54,7 +53,6 @@ if running_in_jupyter():
             layout=widgets.Layout(margin="10px 0 0 0"),
         )
 
-        btn = widgets.Button(description="Got it")
         box = widgets.HBox([label, button])
         display(box)
 

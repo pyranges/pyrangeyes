@@ -1,7 +1,7 @@
 import pyranges as pr
-import pyranges_plot as prp
+import pyrangeyes as pre
 
-prp.set_engine("plotly")
+pre.set_engine("plotly")
 
 ## Sars cov 2
 # Download data: http://ftp.ensemblgenomes.org/pub/viruses/gtf/sars_cov_2/Sars_cov_2.ASM985889v3.101.gtf.gz
@@ -11,7 +11,7 @@ p = pr.read_gtf(
 
 p_cds = p[p["Feature"] == "CDS"]
 
-prp.plot(
+pre.plot(
     p_cds,
     id_col="gene_name",
     text=False,

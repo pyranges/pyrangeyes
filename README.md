@@ -1,7 +1,7 @@
-# pyranges_plot
+# pyrangeyes
 Gene visualization package for dataframe objects generated with [PyRanges](https://pyranges1.readthedocs.io/).
 
-PyRanges Plot significantly facilitates genomic data
+Pyrangeyes significantly facilitates genomic data
 interpretation by providing powerful, customizable, and user-friendly visualizations. It
 effectively covers the gap between data manipulation and visualization, thereby accelerating
 the analysis workflow in genomic research.
@@ -10,7 +10,7 @@ the analysis workflow in genomic research.
 The goal is getting a plot displaying a series of genes, transcripts, or any kind
 of ranges contained in a PyRanges object. It displays the genes' intron-exon structure 
 in its corresponding chromosome, enabling easy visualization of your PyRanges data. The 
-Pyranges version compatible with Pyranges Plot is >= 1.0.0 (find it at https://github.com/pyranges/pyranges_1.x.git).
+Pyranges version compatible with Pyrangeyes is >= 1.0.0 (find it at https://github.com/pyranges/pyranges_1.x.git).
 
 To obtain a plot, the variable `engine` must be specified by the user first. This variable 
 defines the graphic library on which the plots will be based: the valid `engine` options 
@@ -26,7 +26,7 @@ information, but if desired the plot can be directly exported to a png or pdf fi
 
 
 <p align="center">
-    <img src="https://github.com/pyranges/pyranges_plot/blob/main/images/general_ex.png">
+    <img src="https://github.com/pyranges/pyrangeyes/blob/main/images/general_ex.png">
 </p>
 
 
@@ -45,16 +45,16 @@ If the user wishes to use only one of the engines, the installation of all depen
 can be avoided by using the engine-specific installation options:
 ```
 # For matplotlib
-pip install pyranges-plot[matplotlib]
+pip install pyrangeyes[matplotlib]
 
 # For plotly
-pip install pyranges-plot[plotly]
+pip install pyrangeyes[plotly]
 ```
 
-Note that the minimal installation by `pip install pyranges-plot` is not able to produce plots 
+Note that the minimal installation by `pip install pyrangeyes` is not able to produce plots 
 since the graphical dependencies are not installed.
 
 
 ## Documentation
-Pyranges Plot documentation and tutorial can be found at https://pyranges-plot.readthedocs.io/.
+Pyrangeyes documentation and tutorial can be found at https://pyrangeyes.readthedocs.io/.
 

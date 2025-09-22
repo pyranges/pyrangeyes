@@ -1,11 +1,11 @@
 import pyranges as pr
-import pyranges_plot as prp
+import pyrangeyes as pre
 import time
 from memory_profiler import memory_usage
 
 
-prp.set_engine("plt")
-prp.set_warnings(False)
+pre.set_engine("plt")
+pre.set_warnings(False)
 
 # Download data: https://ftp.ensembl.org/pub/release-112/gtf/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.46.112.gtf.gz
 
@@ -43,7 +43,7 @@ end_subset_t = time.time()
 end_subset_m = memory_usage()[0]
 
 # Perform plot
-prp.plot(d_cds_chrom, id_col="gene_id", to_file="_tmp.png", max_shown=3000)
+pre.plot(d_cds_chrom, id_col="gene_id", to_file="_tmp.png", max_shown=3000)
 
 end_plot_t = time.time()
 end_plot_m = memory_usage()[0]

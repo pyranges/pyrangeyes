@@ -1,5 +1,5 @@
 import pyranges as pr
-import pyranges_plot as prp
+import pyrangeyes as pre
 
 # Load data
 gr = pr.PyRanges(
@@ -27,11 +27,11 @@ gr_2 = gr_2[["Chromosome", "Feature", "Start", "End", "Strand", "Parent"]]
 
 # Figure 1
 # interactive plot to show tooltip (Figure 1.A)
-prp.set_engine("plt")
-prp.plot(gr, title_size=30, text_size=15)
+pre.set_engine("plt")
+pre.plot(gr, title_size=30, text_size=15)
 
 # show id, color col and cmap and save as png (Figure 1.B)
-prp.plot(
+pre.plot(
     gr_1,
     id_col="transcript_id",
     color_col="Strand",
@@ -44,7 +44,7 @@ prp.plot(
 
 # Figure 2
 # show thick_cds and save png (Figure 2.A)
-prp.plot(
+pre.plot(
     gr_2,
     id_col="Parent",
     thick_cds=True,
@@ -54,7 +54,7 @@ prp.plot(
 )
 
 # show introns off and save png (Figure 2.B)
-prp.plot(
+pre.plot(
     gr_1,
     id_col="transcript_id",
     shrink=True,

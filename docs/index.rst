@@ -1,7 +1,7 @@
-Pyranges Plot documentation
+Pyrangeyes documentation
 ===========================
 
-Pyranges Plot is a Python library specifically tailored to perform
+Pyrangeyes is a Python library specifically tailored to perform
 along `Pyranges`_ objects. It provides
 user-friendly and customizable visualizations for genomic intervals datasets, a perfect
 tandem for Pyranges' efficient and intuitive genomic data manipulation methods.

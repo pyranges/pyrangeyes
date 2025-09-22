@@ -167,7 +167,7 @@ def plot_exons_ply(
             return fig
     else:
         fig.update_layout(width=file_size[0], height=file_size[1])
-        pio.write_image(fig, to_file)
+        pio.write_image(fig, to_file, width=file_size[0], height=file_size[1])
 
 
 def gby_plot_exons(

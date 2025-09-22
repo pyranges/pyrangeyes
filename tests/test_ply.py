@@ -1,4 +1,4 @@
-import pyranges_plot as prp
+import pyrangeyes as pre
 import pyranges as pr
 import os
 import pytest
@@ -179,8 +179,8 @@ aligned_traces = [
     )
 ]
 
-aligned = prp.make_scatter(vcf, y="Count", engine="ply")
-aligned1 = prp.make_scatter(
+aligned = pre.make_scatter(vcf, y="Count", engine="ply")
+aligned1 = pre.make_scatter(
     vcf,
     y="Count",
     color_by="second_id",
@@ -189,7 +189,7 @@ aligned1 = prp.make_scatter(
     title_size=18,
     engine="ply",
 )
-aligned2 = prp.make_scatter(
+aligned2 = pre.make_scatter(
     vcf,
     y="Count",
     color_by="second_id",
@@ -201,15 +201,15 @@ aligned2 = prp.make_scatter(
     engine="ply",
 )
 
-prp.set_engine("ply")
-prp.set_id_col("transcript_id")
+pre.set_engine("ply")
+pre.set_id_col("transcript_id")
 
 BASELINE_DIR = "tests/baseline_ply"
 
 test_cases = [
     (
         "test01",
-        prp.plot(
+        pre.plot(
             data1,
             color_col="transcript_id",
             exon_border="black",
@@ -218,7 +218,7 @@ test_cases = [
     ),
     (
         "test02",
-        prp.plot(
+        pre.plot(
             data1,
             id_col="second_id",
             color_col="transcript_id",
@@ -229,7 +229,7 @@ test_cases = [
     ),
     (
         "test03",
-        prp.plot(
+        pre.plot(
             data1,
             id_col=["transcript_id", "second_id"],
             color_col="transcript_id",
@@ -239,7 +239,7 @@ test_cases = [
     ),
     (
         "test04",
-        prp.plot(
+        pre.plot(
             data1[data1["transcript_id"] == "t4"],
             id_col="transcript_id",
             shrink=True,
@@ -248,7 +248,7 @@ test_cases = [
     ),
     (
         "test05",
-        prp.plot(
+        pre.plot(
             data1[data1["transcript_id"] == "t2"],
             id_col="transcript_id",
             shrink=True,
@@ -257,7 +257,7 @@ test_cases = [
     ),
     (
         "test06",
-        prp.plot(
+        pre.plot(
             [data2, data3],
             color_col="transcript_id",
             return_plot="fig",
@@ -265,7 +265,7 @@ test_cases = [
     ),
     (
         "test07",
-        prp.plot(
+        pre.plot(
             [data2, data3],
             id_col="Feature",
             color_col="transcript_id",
@@ -275,7 +275,7 @@ test_cases = [
     ),
     (
         "test08",
-        prp.plot(
+        pre.plot(
             [data1, data2, data3],
             id_col="transcript_id",
             color_col="Feature",
@@ -286,7 +286,7 @@ test_cases = [
     ),
     (
         "test09",
-        prp.plot(
+        pre.plot(
             [data2, data2],
             id_col="transcript_id",
             packed=False,
@@ -296,7 +296,7 @@ test_cases = [
     ),
     (
         "test10",
-        prp.plot(
+        pre.plot(
             data2,
             thick_cds=True,
             limits=(75, 125),
@@ -306,7 +306,7 @@ test_cases = [
     ),
     (
         "test11",
-        prp.plot(
+        pre.plot(
             data3,
             id_col="transcript_id",
             limits={"1": (None, 1000), "2": (20, 40), "3": None, "4": (-1000, None)},
@@ -315,7 +315,7 @@ test_cases = [
     ),
     (
         "test12",
-        prp.plot(
+        pre.plot(
             data2,
             id_col="transcript_id",
             limits=data3,
@@ -326,7 +326,7 @@ test_cases = [
     ),
     (
         "test13",
-        prp.plot(
+        pre.plot(
             [data2, data3],
             id_col="transcript_id",
             color_col="Feature",
@@ -337,7 +337,7 @@ test_cases = [
     ),
     (
         "test14",
-        prp.plot(
+        pre.plot(
             [data4, data5],
             id_col="id",
             color_col="depth",
@@ -348,7 +348,7 @@ test_cases = [
     ),
     (
         "test15",
-        prp.plot(
+        pre.plot(
             [data4, data5],
             id_col="id",
             color_col="depth",
@@ -360,7 +360,7 @@ test_cases = [
     ),
     (
         "test16",
-        prp.plot(
+        pre.plot(
             [data4, data5],
             id_col="id",
             color_col="depth",
@@ -372,7 +372,7 @@ test_cases = [
     ),
     (
         "test17",
-        prp.plot(
+        pre.plot(
             [data1, vcf],
             id_col="transcript_id",
             return_plot="fig",
@@ -380,7 +380,7 @@ test_cases = [
     ),
     (
         "test18",
-        prp.plot(
+        pre.plot(
             [data1, vcf],
             id_col="transcript_id",
             add_aligned_plots=[aligned],
@@ -389,7 +389,7 @@ test_cases = [
     ),
     (
         "test19",
-        prp.plot(
+        pre.plot(
             [data1, vcf],
             id_col="transcript_id",
             add_aligned_plots=[aligned1],
@@ -398,7 +398,7 @@ test_cases = [
     ),
     (
         "test20",
-        prp.plot(
+        pre.plot(
             [data1, vcf],
             id_col="transcript_id",
             add_aligned_plots=[aligned2],

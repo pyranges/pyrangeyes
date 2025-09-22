@@ -1,5 +1,5 @@
 import pyranges as pr
-import pyranges_plot as prp
+import pyrangeyes as pre
 import matplotlib.pyplot as plt
 
 # based on ggsci npg, with some modifications
@@ -68,7 +68,7 @@ mapped_w = w.map_to_local(gr, "transcript_id")
 mapped_z = z.map_to_local(gr, "transcript_id")
 
 
-prp.set_engine("plt")
+pre.set_engine("plt")
 # customize left margin to fit titles
 ori_margin = plt.rcParams["figure.subplot.left"]
 plt.rcParams["figure.subplot.left"] = 0.4
@@ -76,7 +76,7 @@ plt.rcParams["figure.subplot.left"] = 0.4
 for ext in ["png"]:  # , 'pdf']:
     # Plot
 
-    prp.plot(
+    pre.plot(
         [gr, w, z, mapped_t1, mapped_t2, t1, t2, mapped_w, mapped_z],
         id_col="transcript_id",
         color_col="transcript_id",

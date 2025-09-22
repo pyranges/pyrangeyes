@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath("../src"))
 
 # -- Project information -----------------------------------------------------
 
-project = "pyranges_plot"
+project = "pyrangeyes"
 copyright = "2024, Ester Muñoz del Campo, Marco Mariotti"
 author = "Ester Muñoz del Campo, Marco Mariotti"
 
@@ -41,7 +41,7 @@ autosummary_generate = True  # Enable summary table generation
 
 # AutoAPI settings
 autoapi_type = "python"
-autoapi_dirs = ["../src/pyranges_plot"]  # Adjust the path as necessary
+autoapi_dirs = ["../src/pyrangeyes"]  # Adjust the path as necessary
 autoapi_generate_api_docs = False
 
 autodoc_default_options = {

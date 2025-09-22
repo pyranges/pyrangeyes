@@ -1,5 +1,5 @@
 import pyranges as pr
-import pyranges_plot as prp
+import pyrangeyes as pre
 import matplotlib.pyplot as plt
 
 # based on ggsci npg, with some modifications
@@ -98,7 +98,7 @@ a_concat_b = pr.concat([a, b])
 
 ######
 # Get plot
-prp.set_engine("plt")
+pre.set_engine("plt")
 
 # customize left margin to fit titles
 ori_margin = plt.rcParams["figure.subplot.left"]
@@ -130,7 +130,7 @@ for i, x in enumerate(data):
     ## x["to_color"] = str(i)
 
 for ext in ["png"]:  # , 'pdf']:
-    prp.plot(
+    pre.plot(
         data=data,
         y_labels=[
             "a",

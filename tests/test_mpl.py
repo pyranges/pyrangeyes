@@ -1,4 +1,4 @@
-import pyranges_plot as prp
+import pyrangeyes as pre
 import pyranges as pr
 import pytest
 import matplotlib.pyplot as plt
@@ -86,21 +86,21 @@ data5 = data4.copy()
 data5["depth"] = [1, 0]
 
 
-prp.set_engine("plt")
-prp.set_id_col("transcript_id")
+pre.set_engine("plt")
+pre.set_id_col("transcript_id")
 
 
 # test id_col
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test01():
-    prp.plot(data1, color_col="transcript_id", exon_border="black")
+    pre.plot(data1, color_col="transcript_id", exon_border="black")
     fig = plt.gcf()
     return fig
 
 
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test02():
-    prp.plot(
+    pre.plot(
         data1,
         id_col="second_id",
         color_col="transcript_id",
@@ -113,7 +113,7 @@ def test02():
 
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test03():
-    prp.plot(
+    pre.plot(
         data1,
         id_col=["transcript_id", "second_id"],
         color_col="transcript_id",
@@ -126,14 +126,14 @@ def test03():
 
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test04():
-    prp.plot(data1[data1["transcript_id"] == "t4"], id_col="transcript_id", shrink=True)
+    pre.plot(data1[data1["transcript_id"] == "t4"], id_col="transcript_id", shrink=True)
     fig = plt.gcf()
     return fig
 
 
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test05():
-    prp.plot(data1[data1["transcript_id"] == "t2"], id_col="transcript_id", shrink=True)
+    pre.plot(data1[data1["transcript_id"] == "t2"], id_col="transcript_id", shrink=True)
     fig = plt.gcf()
     return fig
 
@@ -141,14 +141,14 @@ def test05():
 # test +1 pr
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test06():
-    prp.plot([data2, data3], color_col="transcript_id")  # no id col
+    pre.plot([data2, data3], color_col="transcript_id")  # no id col
     fig = plt.gcf()
     return fig
 
 
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test07():
-    prp.plot(
+    pre.plot(
         [data2, data3], id_col="Feature", color_col="transcript_id", text="{Feature}"
     )  # 1 id_col, text
     fig = plt.gcf()
@@ -157,7 +157,7 @@ def test07():
 
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test08():
-    prp.plot(
+    pre.plot(
         [data1, data2, data3],
         id_col="transcript_id",
         color_col="Feature",
@@ -170,7 +170,7 @@ def test08():
 
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test09():
-    prp.plot(
+    pre.plot(
         [data2, data2], id_col="transcript_id", packed=False, thick_cds=True
     )  # repeated rows in different pr, same chromosome, thick_cds with exon+cds
     fig = plt.gcf()
@@ -179,7 +179,7 @@ def test09():
 
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test10():
-    prp.plot(
+    pre.plot(
         data2, thick_cds=True, limits=(75, 125), text="{Feature}"
     )  # thick_cds not all exon+cds, text, limits as tuple
     fig = plt.gcf()
@@ -188,7 +188,7 @@ def test10():
 
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test11():
-    prp.plot(
+    pre.plot(
         data3,
         id_col="transcript_id",
         limits={"1": (None, 1000), "2": (20, 40), "3": None, "4": (-1000, None)},
@@ -199,7 +199,7 @@ def test11():
 
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test12():
-    prp.plot(
+    pre.plot(
         data2, id_col="transcript_id", limits=data3, arrow_size=0.1, arrow_color="red"
     )  # limit as other pr, arrow_size,colorprp.plot(data2, id_col="transcript_id", limits=data3)
     fig = plt.gcf()
@@ -208,7 +208,7 @@ def test12():
 
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test13():
-    prp.plot(
+    pre.plot(
         [data2, data3],
         id_col="transcript_id",
         color_col="Feature",
@@ -222,7 +222,7 @@ def test13():
 # depth
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test14():
-    prp.plot(
+    pre.plot(
         [data4, data5],
         id_col="id",
         color_col="depth",
@@ -236,7 +236,7 @@ def test14():
 
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test15():
-    prp.plot(
+    pre.plot(
         [data4, data5],
         id_col="id",
         color_col="depth",
@@ -250,7 +250,7 @@ def test15():
 
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test16():
-    prp.plot(
+    pre.plot(
         [data4, data5],
         id_col="id",
         color_col="depth",

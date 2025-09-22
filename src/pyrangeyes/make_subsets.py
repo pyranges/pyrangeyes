@@ -83,7 +83,7 @@ def make_scatter(
     ...     "feature1": ["A", "B", "C", "A", "B"],
     ...     "Count": [1, 2, 3, 4, 5]  # Example count values
     ... })
-    >>> prp.make_scatter(p,y='Count')
+    >>> pre.make_scatter(p,y='Count')
     (Scatter({
         'hovertemplate': '<b>Position:</b> %{x}<br><b>Count:</b> %{y}<extra></extra>',
         'marker': {'color': 'blue', 'size': 8},
