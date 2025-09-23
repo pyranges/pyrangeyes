@@ -1,4 +1,4 @@
-# pyrangeyes
+# Pyrangeyes
 Gene visualization package for dataframe objects generated with [PyRanges](https://pyranges1.readthedocs.io/).
 
 Pyrangeyes significantly facilitates genomic data
@@ -33,12 +33,12 @@ information, but if desired the plot can be directly exported to a png or pdf fi
 
 
 ## Installation
-PyRanges-Plot can be installed using pip. To install all dependencies in order to be able to 
+Pyrangeyes can be installed using pip. To install all dependencies in order to be able to 
 use all the functionalities of the package and both engines, the `[all]` option must be 
 specified:
 
 ```
-pip install pyranges-plot[all]
+pip install pyrangeyes[all]
 ```
 
 If the user wishes to use only one of the engines, the installation of all dependencies 
