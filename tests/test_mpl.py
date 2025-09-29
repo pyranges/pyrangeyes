@@ -175,7 +175,11 @@ def test08():
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test09():
     pre.plot(
-        [data2, data2], id_col="transcript_id", packed=False, thick_cds=True,sort=True
+        [data2, data2],
+        id_col="transcript_id",
+        packed=False,
+        thick_cds=True,
+        sort=True
     )  # repeated rows in different pr, same chromosome, thick_cds with exon+cds
     fig = plt.gcf()
     return fig
@@ -275,5 +279,17 @@ def test17():
         packed=False,
         # to_file="tests/img/test03.png",
     )  # +1 id_col, 1 pr packed False
+    fig = plt.gcf()
+    return fig
+
+@pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
+def test18():
+    pre.plot(
+        [data2, data2],
+        id_col="transcript_id",
+        packed=False,
+        thick_cds=True,
+        to_file="tests/img/test18.png",
+    )
     fig = plt.gcf()
     return fig
