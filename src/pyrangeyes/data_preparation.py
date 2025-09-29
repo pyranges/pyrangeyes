@@ -356,7 +356,7 @@ def get_genes_metadata(
 
     else:
         # one gene in each height
-        # genesmd_df.set_index(PR_INDEX_COL, inplace=True, append=True)
+        # Extract MultiIndex levels: chromosome, pr_ix, and the user-specified id_col(s)
         chroms = genesmd_df.index.get_level_values(CHROM_COL)
         pr_ix = genesmd_df.index.get_level_values(PR_INDEX_COL)
         id_levels = [
@@ -364,38 +364,53 @@ def get_genes_metadata(
         ]
 
         if sort:
-            # fem un rank lexicogràfic: primer cromosoma, després pr_ix, després transcript_id
+            # --- SORT = True ---
+            # Build lexicographic sorting keys:
+            #   1. All id_col levels (e.g., transcript_id, second_id…)
+            #   2. pr_ix (converted to numeric codes, descending)
+            #   3. chromosome (converted to numeric codes, descending)
+            #
+            # np.lexsort applies priority from *last* to *first*,
+            # so chromosome has highest priority, then pr_ix, then id_levels.
             keys = id_levels + [codes(pr_ix, True), codes(chroms, True)]
 
         else:
-            # 1) construeix tuples amb tots els id_col
+            # --- SORT = False ---
+            # Instead of alphabetical/numeric ordering,
+            # respect the explicit input order given by the user.
+
+            # 1) Build tuples combining all id_col levels for each row
             id_levels = [
                 genesmd_df.index.get_level_values(col).astype(str) for col in id_col
             ]
             tuples_ids = list(zip(*id_levels))
 
-            # 2) fes un diccionari amb la posició segons 'order'
+            # 2) Map each tuple to its position in the user-specified input order
             order_map = {tuple(v): i for i, v in enumerate(order)}
 
-            # 3) tradueix els tuples en codis numèrics (respectant 'order')
+            # 3) Translate tuples into numeric codes based on input order.
             codes_ids = np.array([order_map.get(t, len(order)) for t in tuples_ids])
 
-            # 4) ara fem lexsort com abans, però substituint id_levels per codes_ids
-            keys = [codes_ids, codes(pr_ix, True), codes(chroms, True)]
+            # 4) Now do lexsort again, but replacing raw id_levels with codes_ids
+            #    so that sorting strictly follows the custom order.
+            keys = [codes_ids, -pr_ix.to_numpy(), codes(chroms, True)]
 
+        # Compute the row order with np.lexsort
         order_idx = np.lexsort(keys)
         genesmd_df = genesmd_df.iloc[order_idx]
 
+        # Assign y-coordinates: per-chromosome running index after sorting
         genesmd_df["ycoord"] = genesmd_df.groupby(
             CHROM_COL, group_keys=False, observed=True
         ).cumcount()
 
+        # --- Final refinement pass ---
+        # Re-extract index values after reordering
         chroms = genesmd_df.index.get_level_values(CHROM_COL)
         pr_ix = genesmd_df.index.get_level_values(PR_INDEX_COL)
         id_levels = [
             genesmd_df.index.get_level_values(col).astype(str) for col in id_col
         ]
-
         keys2 = id_levels + [codes(pr_ix, True), codes(chroms, True)]
         order2 = np.lexsort(keys2)
         genesmd_df = genesmd_df.iloc[order2]
