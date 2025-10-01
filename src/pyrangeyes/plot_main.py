@@ -76,6 +76,7 @@ def plot(
     tooltip=None,
     to_file=None,
     theme=None,
+    sort=False,
     **kargs,
 ):
     """
@@ -165,6 +166,11 @@ def plot(
 
     theme: str, default "light"
         General color appearance of the plot. Available modes: "light", "dark", "pastel", "swimming_pool".
+
+    sort: bool, default False
+        Whether to automatically sort the input PyRanges.
+        If True, the data will be sorted before plotting.
+        If False, the data will retain its original order
 
     **kargs
         Customizable plot features can be defined using kargs. Use print_options() function to check the variables'
@@ -431,6 +437,19 @@ def plot(
         subdf, colormap, color_col, feat_dict["exon_border"], warnings
     )
 
+    # This is needed to maintain the order of the rows when adding multiple pr
+    if len(ID_COL) == 1:
+        # Only one column
+        order = subdf[ID_COL[0]].drop_duplicates().tolist()
+    else:
+        # Multi-column, we use tuples
+        order = (
+            subdf[ID_COL]
+            .drop_duplicates()
+            .apply(lambda row: tuple(row), axis=1)
+            .tolist()
+        )
+
     # Create genes metadata DataFrame
     genesmd_df = get_genes_metadata(
         subdf,
@@ -439,6 +458,8 @@ def plot(
         packed,
         feat_dict["exon_height"],
         feat_dict["v_spacer"],
+        order,
+        sort,
     )
 
     # Create chromosome metadata DataFrame
@@ -497,7 +518,6 @@ def plot(
     else:
         subdf[CUM_DELTA_COL] = [0] * len(subdf)
 
-    # Sort data to plot chromosomes and pr objects in order
     subdf.sort_values([CHROM_COL, PR_INDEX_COL] + ID_COL + [START_COL], inplace=True)
     chrmd_df.sort_values([CHROM_COL, PR_INDEX_COL], inplace=True)
     subdf[EXON_IX_COL] = subdf.groupby(

@@ -34,5 +34,5 @@ jobs:
     - name: Run tests MPL backend Agg
       run: |
         export MPLBACKEND=Agg
-        ./venv/bin/pytest tests/test_mpl.py
+        ./venv/bin/pytest --mpl tests/test_mpl.py
         ./venv/bin/pytest tests/test_ply.py

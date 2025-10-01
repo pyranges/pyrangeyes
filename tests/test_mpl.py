@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 
 matplotlib.use("Agg")
+matplotlib.rcParams["savefig.dpi"] = 400
 
 data1 = pr.PyRanges(
     {
@@ -93,7 +94,7 @@ pre.set_id_col("transcript_id")
 # test id_col
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test01():
-    pre.plot(data1, color_col="transcript_id", exon_border="black")
+    pre.plot(data1, color_col="transcript_id", exon_border="black",sort=True)
     fig = plt.gcf()
     return fig
 
@@ -106,6 +107,7 @@ def test02():
         color_col="transcript_id",
         shrink=True,
         exon_border="black",
+        sort=True,
     )
     fig = plt.gcf()
     return fig  # 1 id_col
@@ -118,6 +120,7 @@ def test03():
         id_col=["transcript_id", "second_id"],
         color_col="transcript_id",
         packed=False,
+        sort=True
         # to_file="tests/img/test03.png",
     )  # +1 id_col, 1 pr packed False
     fig = plt.gcf()
@@ -141,7 +144,7 @@ def test05():
 # test +1 pr
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test06():
-    pre.plot([data2, data3], color_col="transcript_id")  # no id col
+    pre.plot([data2, data3], color_col="transcript_id", sort=True)  # no id col
     fig = plt.gcf()
     return fig
 
@@ -149,7 +152,7 @@ def test06():
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test07():
     pre.plot(
-        [data2, data3], id_col="Feature", color_col="transcript_id", text="{Feature}"
+        [data2, data3], id_col="Feature", color_col="transcript_id", text="{Feature}",sort=True
     )  # 1 id_col, text
     fig = plt.gcf()
     return fig
@@ -163,6 +166,7 @@ def test08():
         color_col="Feature",
         y_labels=[1, 2, 3],
         shrink=True,
+        sort=True,
     )  # shrink and y_labels
     fig = plt.gcf()
     return fig
@@ -171,7 +175,11 @@ def test08():
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test09():
     pre.plot(
-        [data2, data2], id_col="transcript_id", packed=False, thick_cds=True
+        [data2, data2],
+        id_col="transcript_id",
+        packed=False,
+        thick_cds=True,
+        sort=True
     )  # repeated rows in different pr, same chromosome, thick_cds with exon+cds
     fig = plt.gcf()
     return fig
@@ -180,7 +188,7 @@ def test09():
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test10():
     pre.plot(
-        data2, thick_cds=True, limits=(75, 125), text="{Feature}"
+        data2, thick_cds=True, limits=(75, 125), text="{Feature}",sort=True
     )  # thick_cds not all exon+cds, text, limits as tuple
     fig = plt.gcf()
     return fig
@@ -200,7 +208,7 @@ def test11():
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test12():
     pre.plot(
-        data2, id_col="transcript_id", limits=data3, arrow_size=0.1, arrow_color="red"
+        data2, id_col="transcript_id", limits=data3, arrow_size=0.1, arrow_color="red",sort=True
     )  # limit as other pr, arrow_size,colorprp.plot(data2, id_col="transcript_id", limits=data3)
     fig = plt.gcf()
     return fig
@@ -214,6 +222,7 @@ def test13():
         color_col="Feature",
         legend=True,
         title_chr="TITLE {chrom}",
+        sort=True
     )  # legend, title string, intron and exon color
     fig = plt.gcf()
     return fig
@@ -258,5 +267,29 @@ def test16():
         tooltip="{depth}",
         colormap={"0": "#505050", "1": "goldenrod"},
     )  # colormap as dict
+    fig = plt.gcf()
+    return fig
+
+@pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
+def test17():
+    pre.plot(
+        data1,
+        id_col=["transcript_id", "second_id"],
+        color_col="transcript_id",
+        packed=False,
+        # to_file="tests/img/test03.png",
+    )  # +1 id_col, 1 pr packed False
+    fig = plt.gcf()
+    return fig
+
+@pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
+def test18():
+    pre.plot(
+        [data2, data2],
+        id_col="transcript_id",
+        packed=False,
+        thick_cds=True,
+        to_file="tests/img/test18.png",
+    )
     fig = plt.gcf()
     return fig

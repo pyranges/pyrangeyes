@@ -2,6 +2,7 @@ import numpy as np
 from intervaltree import IntervalTree
 import pyranges as pr
 from pyranges.core.names import CHROM_COL, START_COL, END_COL
+import pandas as pd
 
 # Check for matplotlib
 try:
@@ -255,7 +256,15 @@ def subdf_assigncolor(subdf, colormap, color_col, exon_border, warnings):
     return subdf
 
 
-def get_genes_metadata(df, id_col, color_col, packed, exon_height, v_spacer):
+def codes(vals, desc=False):
+    """Function for ordering multiindex df"""
+    c, _ = pd.factorize(vals)
+    return (c.max() - c) if desc else c
+
+
+def get_genes_metadata(
+    df, id_col, color_col, packed, exon_height, v_spacer, order, sort
+):
     """Create genes metadata df."""
 
     # Start df with chromosome and the column defining color
@@ -291,10 +300,43 @@ def get_genes_metadata(df, id_col, color_col, packed, exon_height, v_spacer):
     genesmd_df["chrix"] = genesmd_df.groupby(
         CHROM_COL, group_keys=False, observed=True
     ).ngroup()
-    # Sort by pr_ix and chromosome
-    genesmd_df.sort_values(by=[PR_INDEX_COL, "chrix"], inplace=True)
+
+    # Sort by pr_ix and chromosome / If user wants to sort the df
+    if sort:
+        genesmd_df.sort_values(by=[PR_INDEX_COL, "chrix"], inplace=True)
+
+    else:
+        # genesmd_df.sort_values(by=[PR_INDEX_COL,chrix], inplace=True)
+        order = order[::-1]
+
+        # Case 1: only one id_col
+        if len(id_col) == 1:
+            idx_s = pd.IndexSlice
+            genesmd_df = genesmd_df.loc[idx_s[:, :, order], :]
+
+        else:
+            # Names of the ID column levels
+            id_levels = id_col  # ["transcript_id", "second_id"]
+
+            # We create a dict mapping the order
+            order_map = {v: i for i, v in enumerate(order)}
+
+            # Doing a temporal column with the order
+            temp_tuples = list(
+                zip(
+                    genesmd_df.index.get_level_values(id_levels[0]),
+                    genesmd_df.index.get_level_values(id_levels[1]),
+                )
+            )
+
+            # Assigning a rank based on the order
+            rank = [order_map.get(t, len(order)) for t in temp_tuples]
+
+            # Reordering
+            genesmd_df = genesmd_df.iloc[np.argsort(rank)]
+
     genesmd_df["gene_ix_xchrom"] = genesmd_df.groupby(
-        ["chrix", PR_INDEX_COL], group_keys=False, observed=True
+        ["chrix", PR_INDEX_COL], group_keys=False, observed=True, sort=False
     ).cumcount()
 
     # Assign y-coordinate to genes
@@ -314,20 +356,72 @@ def get_genes_metadata(df, id_col, color_col, packed, exon_height, v_spacer):
 
     else:
         # one gene in each height
-        # genesmd_df.set_index(PR_INDEX_COL, inplace=True, append=True)
-        genesmd_df["ycoord"] = (
-            genesmd_df.sort_values(by=PR_INDEX_COL, ascending=False)
-            .groupby(CHROM_COL, group_keys=False, observed=True)
-            .cumcount()
-        )
+        # Extract MultiIndex levels: chromosome, pr_ix, and the user-specified id_col(s)
+        chroms = genesmd_df.index.get_level_values(CHROM_COL)
+        pr_ix = genesmd_df.index.get_level_values(PR_INDEX_COL)
+        id_levels = [
+            genesmd_df.index.get_level_values(col).astype(str) for col in id_col
+        ]
+
+        if sort:
+            # --- SORT = True ---
+            # Build lexicographic sorting keys:
+            #   1. All id_col levels (e.g., transcript_id, second_id…)
+            #   2. pr_ix (converted to numeric codes, descending)
+            #   3. chromosome (converted to numeric codes, descending)
+            #
+            # np.lexsort applies priority from *last* to *first*,
+            # so chromosome has highest priority, then pr_ix, then id_levels.
+            keys = id_levels + [codes(pr_ix, True), codes(chroms, True)]
+
+        else:
+            # --- SORT = False ---
+            # Instead of alphabetical/numeric ordering,
+            # respect the explicit input order given by the user.
+
+            # 1) Build tuples combining all id_col levels for each row
+            id_levels = [
+                genesmd_df.index.get_level_values(col).astype(str) for col in id_col
+            ]
+            tuples_ids = list(zip(*id_levels))
+
+            # 2) Map each tuple to its position in the user-specified input order
+            order_map = {tuple(v): i for i, v in enumerate(order)}
+
+            # 3) Translate tuples into numeric codes based on input order.
+            codes_ids = np.array([order_map.get(t, len(order)) for t in tuples_ids])
+
+            # 4) Now do lexsort again, but replacing raw id_levels with codes_ids
+            #    so that sorting strictly follows the custom order.
+            keys = [codes_ids, -pr_ix.to_numpy(), codes(chroms, True)]
+
+        # Compute the row order with np.lexsort
+        order_idx = np.lexsort(keys)
+        genesmd_df = genesmd_df.iloc[order_idx]
+
+        # Assign y-coordinates: per-chromosome running index after sorting
+        genesmd_df["ycoord"] = genesmd_df.groupby(
+            CHROM_COL, group_keys=False, observed=True
+        ).cumcount()
+
+        # --- Final refinement pass ---
+        # Re-extract index values after reordering
+        chroms = genesmd_df.index.get_level_values(CHROM_COL)
+        pr_ix = genesmd_df.index.get_level_values(PR_INDEX_COL)
+        id_levels = [
+            genesmd_df.index.get_level_values(col).astype(str) for col in id_col
+        ]
+        keys2 = id_levels + [codes(pr_ix, True), codes(chroms, True)]
+        order2 = np.lexsort(keys2)
+        genesmd_df = genesmd_df.iloc[order2]
 
         # now create col to update according to prev pr height if needed
         # only one chromosome (no matter how many pr)
         if len(genesmd_df.index.get_level_values(CHROM_COL).drop_duplicates()) == 1:
             genesmd_df = genesmd_df.assign(
-                upd_yc=genesmd_df.groupby([PR_INDEX_COL], group_keys=False).ngroup(
-                    ascending=False
-                )
+                upd_yc=genesmd_df.groupby(
+                    [PR_INDEX_COL], group_keys=False, sort=False
+                ).ngroup(ascending=False)
             )
 
             # increase proper spacing to place pr_line
@@ -337,8 +431,12 @@ def get_genes_metadata(df, id_col, color_col, packed, exon_height, v_spacer):
         # +1 chromosome and +1 pr
         elif len(genesmd_df.index.get_level_values(PR_INDEX_COL).drop_duplicates()) > 1:
             genesmd_df = genesmd_df.assign(
-                upd_yc=genesmd_df.groupby(CHROM_COL, group_keys=False).apply(
-                    lambda x: x.groupby(PR_INDEX_COL).ngroup(ascending=False)
+                upd_yc=genesmd_df.groupby(
+                    CHROM_COL, group_keys=False, sort=False
+                ).apply(
+                    lambda x: x.groupby(PR_INDEX_COL, sort=False).ngroup(
+                        ascending=False
+                    )
                 )
             )
             # increase proper spacing to place pr_line

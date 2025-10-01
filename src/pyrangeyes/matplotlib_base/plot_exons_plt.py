@@ -165,7 +165,7 @@ def plot_exons_plt(
         else:
             raise Exception("Matplotlib can not return a Dash app.")
     else:
-        plt.savefig(to_file, format=to_file[-3:], dpi=400)
+        plt.savefig(to_file, format=to_file[-3:], dpi=100)
 
 
 def gby_plot_exons(
