@@ -1,4 +1,4 @@
-import pyranges as pr
+import pyranges1 as pr
 import pyrangeyes as pre
 
 pre.set_engine("plt")

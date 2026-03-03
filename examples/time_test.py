@@ -1,4 +1,4 @@
-import pyranges as pr
+import pyranges1 as pr
 import pyrangeyes as pre
 import time
 from memory_profiler import memory_usage

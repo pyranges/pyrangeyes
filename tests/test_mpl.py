@@ -1,5 +1,5 @@
 import pyrangeyes as pre
-import pyranges as pr
+import pyranges1 as pr
 import pytest
 import matplotlib.pyplot as plt
 import matplotlib
@@ -15,6 +15,7 @@ data1 = pr.PyRanges(
         "End": [i * 100 for i in [15, 37, 6, 17, 39, 47, 51, 57, 67]],
         "transcript_id": ["t1", "t1", "t2", "t2", "t2", "t3", "t3", "t3", "t4"],
         "second_id": ["a"] * 4 + ["b"] * 5,
+        "Feature": ["mRNA"]*9,
     }
 )
 

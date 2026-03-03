@@ -2,7 +2,7 @@ import plotly.graph_objects as go
 import plotly.io as pio
 import pandas as pd
 import numpy as np
-from pyranges.core.names import CHROM_COL, START_COL, END_COL, STRAND_COL
+from pyranges1.core.names import CHROM_COL, START_COL, END_COL, STRAND_COL
 
 from .core import initialize_dash_app, coord2percent
 from .fig_axes import create_fig
@@ -80,11 +80,10 @@ def plot_exons_ply(
     )
 
     # Plot genes
-    subdf.groupby(
-        id_col + [PR_INDEX_COL, CHROM_COL], group_keys=False, observed=True
-    ).apply(
-        lambda subdf: gby_plot_exons(
-            subdf,
+    group_cols = id_col + [PR_INDEX_COL, CHROM_COL]
+    for _, grouped_subdf in subdf.groupby(group_cols, group_keys=False, observed=True):
+        gby_plot_exons(
+            grouped_subdf,
             fig,
             chrmd_df_grouped,
             genesmd_df,
@@ -104,9 +103,7 @@ def plot_exons_ply(
             arrow_color,
             arrow_size,
             depth_col,
-        ),
-        include_groups=True,
-    )  # .reset_index(level=PR_INDEX_COL)
+        )
 
     # Adjust plot display
     fig.update_layout(

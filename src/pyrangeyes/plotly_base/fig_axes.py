@@ -2,7 +2,7 @@ import plotly.subplots as sp
 import plotly.graph_objects as go
 import numpy as np
 import pandas as pd
-from pyranges.core.names import START_COL, END_COL
+from pyranges1.core.names import START_COL, END_COL
 from pyrangeyes.core import cumdelting
 from pyrangeyes.names import PR_INDEX_COL, CUM_DELTA_COL
 

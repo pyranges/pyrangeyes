@@ -1,6 +1,6 @@
-import pyranges as pr
+import pyranges1 as pr
 import pandas as pd
-from pyranges.core.names import CHROM_COL, START_COL, END_COL
+from pyranges1.core.names import CHROM_COL, START_COL, END_COL
 
 from .names import (
     SHRTHRES_COL,

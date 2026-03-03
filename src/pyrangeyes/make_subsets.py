@@ -73,7 +73,7 @@ def make_scatter(
 
     Examples
     --------
-    >>> import pyranges as pr
+    >>> import pyranges1 as pr
     >>> p = pr.PyRanges({
     ...     "Chromosome": [1] * 5,
     ...     "Strand": ["+"] * 3 + ["-"] * 2,
