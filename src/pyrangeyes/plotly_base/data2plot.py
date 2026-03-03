@@ -1,5 +1,5 @@
-import pyranges as pr
-from pyranges.core.names import START_COL, END_COL
+import pyranges1 as pr
+from pyranges1.core.names import START_COL, END_COL
 
 from .core import coord2percent, percent2coord
 import plotly.graph_objects as go

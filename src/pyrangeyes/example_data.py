@@ -1,4 +1,4 @@
-import pyranges as pr
+import pyranges1 as pr
 import os
 from .vcf.vcf_reader import read_vcf
 

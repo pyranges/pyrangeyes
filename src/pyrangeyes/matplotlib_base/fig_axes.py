@@ -5,7 +5,7 @@ import matplotlib.gridspec as gridspec
 from matplotlib.ticker import ScalarFormatter
 from matplotlib.ticker import MaxNLocator
 from matplotlib.patches import Rectangle
-from pyranges.core.names import START_COL, END_COL
+from pyranges1.core.names import START_COL, END_COL
 from pyrangeyes.core import cumdelting
 from .core import make_annotation
 from ..names import CUM_DELTA_COL, PR_INDEX_COL

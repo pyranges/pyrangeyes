@@ -1,7 +1,7 @@
 import numpy as np
 from intervaltree import IntervalTree
-import pyranges as pr
-from pyranges.core.names import CHROM_COL, START_COL, END_COL
+import pyranges1 as pr
+from pyranges1.core.names import CHROM_COL, START_COL, END_COL
 import pandas as pd
 
 # Check for matplotlib
@@ -345,12 +345,11 @@ def get_genes_metadata(
         genesmd_df = genesmd_df.groupby(
             [CHROM_COL, PR_INDEX_COL], group_keys=False, observed=True
         ).apply(
-            lambda g: genesmd_packed(g), include_groups=False
+            lambda g: genesmd_packed(g)
         )  # add packed ycoord column
         genesmd_df.reset_index(level=CHROM_COL, inplace=True)
         genesmd_df = genesmd_df.groupby(CHROM_COL, observed=True).apply(
-            lambda g: update_y(g.assign(**{CHROM_COL: g.name}), exon_height, v_spacer),
-            include_groups=False,
+            lambda g: update_y(g.assign(**{CHROM_COL: g.name}), exon_height, v_spacer)
         )
         genesmd_df.drop(CHROM_COL, axis=1, inplace=True)
 

@@ -1,4 +1,4 @@
-from pyranges import PyRanges
+from pyranges1 import PyRanges
 from .core import set_engine
 from .plot_main import plot
 

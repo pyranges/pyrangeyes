@@ -1,5 +1,5 @@
 import pandas as pd
-import pyranges as pr
+import pyranges1 as pr
 from pathlib import Path
 from io import StringIO
 

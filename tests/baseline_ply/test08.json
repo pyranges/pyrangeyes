@@ -1694,7 +1694,7 @@
         "color": "#f05f89"
       },
       "mode": "lines",
-      "name": "nan",
+      "name": "mRNA",
       "showlegend": false,
       "text": "<br>[+] (500.0, 1500.0)<br>ID: t1",
       "x": [
@@ -1723,7 +1723,7 @@
         "color": "#f05f89"
       },
       "mode": "lines",
-      "name": "nan",
+      "name": "mRNA",
       "showlegend": false,
       "text": "<br>[+] (3500.0, 3700.0)<br>ID: t1",
       "x": [
@@ -2370,7 +2370,7 @@
         "color": "#f05f89"
       },
       "mode": "lines",
-      "name": "nan",
+      "name": "mRNA",
       "showlegend": false,
       "text": "<br>[-] (300.0, 600.0)<br>ID: t2",
       "x": [
@@ -2399,7 +2399,7 @@
         "color": "#f05f89"
       },
       "mode": "lines",
-      "name": "nan",
+      "name": "mRNA",
       "showlegend": false,
       "text": "<br>[-] (1300.0, 1700.0)<br>ID: t2",
       "x": [
@@ -2428,7 +2428,7 @@
         "color": "#f05f89"
       },
       "mode": "lines",
-      "name": "nan",
+      "name": "mRNA",
       "showlegend": false,
       "text": "<br>[-] (3500.0, 3900.0)<br>ID: t2",
       "x": [
@@ -2946,7 +2946,7 @@
         "color": "#f05f89"
       },
       "mode": "lines",
-      "name": "nan",
+      "name": "mRNA",
       "showlegend": false,
       "text": "<br>[+] (4500.0, 4700.0)<br>ID: t3",
       "x": [
@@ -2975,7 +2975,7 @@
         "color": "#f05f89"
       },
       "mode": "lines",
-      "name": "nan",
+      "name": "mRNA",
       "showlegend": false,
       "text": "<br>[+] (4900.0, 5100.0)<br>ID: t3",
       "x": [
@@ -3004,7 +3004,7 @@
         "color": "#f05f89"
       },
       "mode": "lines",
-      "name": "nan",
+      "name": "mRNA",
       "showlegend": false,
       "text": "<br>[+] (5600.0, 5700.0)<br>ID: t3",
       "x": [
@@ -3233,7 +3233,7 @@
         "color": "#f05f89"
       },
       "mode": "lines",
-      "name": "nan",
+      "name": "mRNA",
       "showlegend": false,
       "text": "<br>[-] (6000.0, 6700.0)<br>ID: t4",
       "x": [

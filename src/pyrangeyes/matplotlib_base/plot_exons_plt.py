@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.patches import Rectangle
-from pyranges.core.names import CHROM_COL, START_COL, END_COL, STRAND_COL
+from pyranges1.core.names import CHROM_COL, START_COL, END_COL, STRAND_COL
 
 from .core import plt_popup_warning, coord2percent, rgb_string_to_tuple
 from .fig_axes import create_fig
@@ -112,11 +112,11 @@ def plot_exons_plt(
 
     # Plot genes
     # pd.DataFrame.groupby(subdf,
-    subdf.groupby(
+    for _, grouped_subdf in subdf.groupby(
         id_col + [PR_INDEX_COL, CHROM_COL], group_keys=False, observed=True
-    ).apply(
-        lambda subdf: gby_plot_exons(
-            subdf,
+    ):
+        gby_plot_exons(
+            grouped_subdf,
             axes,
             fig,
             chrmd_df_grouped,
@@ -136,9 +136,7 @@ def plot_exons_plt(
             arrow_color,
             arrow_size,
             depth_col,
-        ),
-        include_groups=True,
-    )
+        )
 
     # Prevent zoom in y axis
     # for ax in axes:

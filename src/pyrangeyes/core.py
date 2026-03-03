@@ -1,6 +1,6 @@
 import pandas as pd
 import importlib
-from pyranges.core.names import END_COL
+from pyranges1.core.names import END_COL
 
 from .names import CUM_DELTA_COL
 from .plot_features import (
@@ -36,7 +36,7 @@ def set_id_col(name):
 
     Examples
     --------
-    >>> import pyranges_plot as pre
+    >>> import pyrangeyes as pre
 
     >>> pre.set_id_col('gene_id')
 

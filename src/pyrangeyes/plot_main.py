@@ -23,7 +23,7 @@ from .data_preparation import (
     subdf_assigncolor,
 )
 from .introns_off import introns_resize, recalc_axis
-from pyranges.core.names import CHROM_COL, START_COL, END_COL, STRAND_COL
+from pyranges1.core.names import CHROM_COL, START_COL, END_COL, STRAND_COL
 from .names import (
     PR_INDEX_COL,
     ORISTART_COL,
@@ -486,14 +486,12 @@ def plot(
             subdf[SHRTHRES_COL] = [shrink_threshold] * len(subdf)
         elif isinstance(shrink_threshold, float):
             subdf[SHRTHRES_COL] = [shrink_threshold] * len(subdf)
-            subdf = subdf.groupby(CHROM_COL, group_keys=False, observed=True).apply(
+            subdf = subdf.groupby(CHROM_COL, group_keys=False, observed=True)[subdf.columns].apply(
                 lambda x: compute_thresh(x, chrmd_df_grouped) if not x.empty else None,
-                include_groups=True,
             )
 
-        subdf = subdf.groupby(CHROM_COL, group_keys=False, observed=True).apply(
+        subdf = subdf.groupby(CHROM_COL, group_keys=False, observed=True)[subdf.columns].apply(
             lambda x: introns_resize(x, ts_data, ID_COL),
-            include_groups=True,  # if not x.empty else None
         )  # empty rows when subset
         subdf[START_COL] = subdf[ADJSTART_COL]
         subdf[END_COL] = subdf[ADJEND_COL]
@@ -531,9 +529,11 @@ def plot(
         subdf[TEXT_PAD_COL] = [text_pad] * len(subdf)
     elif isinstance(text_pad, float):
         subdf[TEXT_PAD_COL] = [text_pad] * len(subdf)
-        subdf = subdf.groupby(CHROM_COL, group_keys=False, observed=True).apply(
-            lambda x: compute_tpad(x, chrmd_df_grouped) if not x.empty else None,
-            include_groups=True,
+        subdf = subdf.groupby(CHROM_COL, group_keys=False, observed=True)[subdf.columns].apply(
+            lambda x: compute_tpad(
+            x if not x.empty else x,
+            chrmd_df_grouped
+            )
         )
 
     # Deal with added plots
@@ -679,7 +679,7 @@ def plot(
                 )
             else:
                 raise Exception(
-                    "Make sure to install matplotlib dependecies by running `pip install pyranges-plot[plt]`"
+                    "Make sure to install matplotlib dependecies by running `pip install pyrangeyes[plt]`"
                 )
         elif engine in ["ply", "plotly"]:
             if not missing_ply_flag:
@@ -711,7 +711,7 @@ def plot(
                 )
             else:
                 raise Exception(
-                    "Make sure to install plotly dependecies by running `pip install pyranges-plot[plotly]`"
+                    "Make sure to install plotly dependecies by running `pip install pyrangeyes[plotly]`"
                 )
         else:
             raise Exception("Please define engine with set_engine().")
