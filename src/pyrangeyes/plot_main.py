@@ -486,11 +486,15 @@ def plot(
             subdf[SHRTHRES_COL] = [shrink_threshold] * len(subdf)
         elif isinstance(shrink_threshold, float):
             subdf[SHRTHRES_COL] = [shrink_threshold] * len(subdf)
-            subdf = subdf.groupby(CHROM_COL, group_keys=False, observed=True)[subdf.columns].apply(
+            subdf = subdf.groupby(CHROM_COL, group_keys=False, observed=True)[
+                subdf.columns
+            ].apply(
                 lambda x: compute_thresh(x, chrmd_df_grouped) if not x.empty else None,
             )
 
-        subdf = subdf.groupby(CHROM_COL, group_keys=False, observed=True)[subdf.columns].apply(
+        subdf = subdf.groupby(CHROM_COL, group_keys=False, observed=True)[
+            subdf.columns
+        ].apply(
             lambda x: introns_resize(x, ts_data, ID_COL),
         )  # empty rows when subset
         subdf[START_COL] = subdf[ADJSTART_COL]
@@ -529,12 +533,9 @@ def plot(
         subdf[TEXT_PAD_COL] = [text_pad] * len(subdf)
     elif isinstance(text_pad, float):
         subdf[TEXT_PAD_COL] = [text_pad] * len(subdf)
-        subdf = subdf.groupby(CHROM_COL, group_keys=False, observed=True)[subdf.columns].apply(
-            lambda x: compute_tpad(
-            x if not x.empty else x,
-            chrmd_df_grouped
-            )
-        )
+        subdf = subdf.groupby(CHROM_COL, group_keys=False, observed=True)[
+            subdf.columns
+        ].apply(lambda x: compute_tpad(x if not x.empty else x, chrmd_df_grouped))
 
     # Deal with added plots
     if (len(chrmd_df_grouped) > 1) and add_aligned_plots:

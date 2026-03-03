@@ -344,9 +344,7 @@ def get_genes_metadata(
         genesmd_df["ycoord"] = -1
         genesmd_df = genesmd_df.groupby(
             [CHROM_COL, PR_INDEX_COL], group_keys=False, observed=True
-        ).apply(
-            lambda g: genesmd_packed(g)
-        )  # add packed ycoord column
+        ).apply(lambda g: genesmd_packed(g))  # add packed ycoord column
         genesmd_df.reset_index(level=CHROM_COL, inplace=True)
         genesmd_df = genesmd_df.groupby(CHROM_COL, observed=True).apply(
             lambda g: update_y(g.assign(**{CHROM_COL: g.name}), exon_height, v_spacer)

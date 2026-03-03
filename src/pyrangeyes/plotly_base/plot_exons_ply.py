@@ -81,9 +81,7 @@ def plot_exons_ply(
 
     # Plot genes
     group_cols = id_col + [PR_INDEX_COL, CHROM_COL]
-    for _, grouped_subdf in subdf.groupby(
-        group_cols, group_keys=False, observed=True
-    ):
+    for _, grouped_subdf in subdf.groupby(group_cols, group_keys=False, observed=True):
         gby_plot_exons(
             grouped_subdf,
             fig,
