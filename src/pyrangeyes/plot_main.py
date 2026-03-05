@@ -21,6 +21,7 @@ from .data_preparation import (
     compute_thresh,
     compute_tpad,
     subdf_assigncolor,
+    assign_label_rows,
 )
 from .introns_off import introns_resize, recalc_axis
 from pyranges1.core.names import CHROM_COL, START_COL, END_COL, STRAND_COL
@@ -461,6 +462,16 @@ def plot(
         order,
         sort,
     )
+    
+    genesmd_df = assign_label_rows(
+        genesmd_df,
+        ID_COL,
+        PR_INDEX_COL,
+        text_pad=feat_dict["text_pad"],
+        packed=packed,
+        sort=sort,
+        plot_limits=None,  # You can pass limits if needed
+   )
 
     # Create chromosome metadata DataFrame
     chrmd_df, chrmd_df_grouped = get_chromosome_metadata(
