@@ -459,6 +459,17 @@ def get_chromosome_metadata(
     chrmd_limits(chrmd_df, limits)  # unknown limits are nan
     chrmd_df = chrmd_df.apply(lambda x: fill_min_max(x, ts_data), axis=1)
 
+    # Store per-pr top y and order prs by visual position (top to bottom)
+    pr_top_y = genesmd_df.groupby(
+        [CHROM_COL, PR_INDEX_COL], group_keys=False, observed=True
+    )["ycoord"].max()
+    chrmd_df = chrmd_df.join(pr_top_y.rename("pr_top_y"))
+    chrmd_df = (
+        chrmd_df.reset_index()
+        .sort_values([CHROM_COL, "pr_top_y", PR_INDEX_COL], ascending=[True, False, True])
+        .set_index([CHROM_COL, PR_INDEX_COL])
+    )
+
     chrmd_df_grouped = (
         chrmd_df.reset_index(level=PR_INDEX_COL)
         .groupby(CHROM_COL, group_keys=False, observed=True)
@@ -483,19 +494,13 @@ def get_chromosome_metadata(
     )  # the middle of the rectangle is +.5 of ycoord
 
     # Obtain the positions of lines separating pr objects
-    chrmd_df = chrmd_df.join(
-        genesmd_df.groupby([CHROM_COL, PR_INDEX_COL], group_keys=False, observed=True)[
-            "ycoord"
-        ].max()
-    )
-    chrmd_df.rename(columns={"ycoord": "pr_line"}, inplace=True)
-    chrmd_df["pr_line"] = chrmd_df.groupby(CHROM_COL, observed=True)["pr_line"].shift(
+    chrmd_df["pr_line"] = chrmd_df.groupby(CHROM_COL, observed=True)["pr_top_y"].shift(
         -1, fill_value=-(0.5 + exon_height / 2 + v_spacer)
     )
-
     chrmd_df["pr_line"] += (
         0.5 + exon_height / 2 + v_spacer
     )  # midle of rectangle is +.5 of ycoord
+    chrmd_df.drop(columns=["pr_top_y"], inplace=True)
 
     # Set chrom_ix to get the right association to the plot index
     chrmd_df_grouped["chrom_ix"] = chrmd_df_grouped.groupby(
@@ -504,9 +509,21 @@ def get_chromosome_metadata(
 
     return chrmd_df, chrmd_df_grouped
 
-def no_overlap(a,  b, pad=2):
+def no_overlap(a,  b, pad=2, pw=None):
     """Check if two intervals a and b overlap, considering a padding."""
-    return a[1] - pad <= b[0] or a[0] >= b[1] - pad
+    if pw is not None:
+        if pw > 10000:
+            pad = 50
+        elif pw < 10000 and pw >= 1000:
+            pad = 20
+        elif pw < 1000 and pw >= 200:
+            pad = 10
+        elif pw < 200 and pw >= 50:
+            pad = 5
+        elif pw <= 50:
+            pad = 0
+    return a[1] + pad <= b[0] or a[0] >= b[1] + pad
+    
 
 def assign_label_rows(subdf, id_col,
                       PR_INDEX_COL,
@@ -541,6 +558,7 @@ def assign_label_rows(subdf, id_col,
     s = s.reset_index(level=PR_INDEX_COL, drop=True)
 
     ycoord_map = {}
+    pr_rank_map = {}
 
     # Iterating in sorted cromosomes if sort == True else in original order
     chrom_iter = sorted(s["chrix"].unique()) if sort else pd.unique(s["chrix"])
@@ -574,6 +592,8 @@ def assign_label_rows(subdf, id_col,
             if sort
             else pd.unique(chrom_df[PR_INDEX_COL])
         )
+        for rank, pr_val in enumerate(pr_iter):
+            pr_rank_map[(chrom, pr_val)] = rank
         # iterate PR_INDEX_COL in ascending order (if sort ==True)
         for pr_val in pr_iter:
             sub = chrom_df[chrom_df[PR_INDEX_COL] == pr_val]
@@ -631,7 +651,7 @@ def assign_label_rows(subdf, id_col,
                     assigned_row = None
                     for rid, row_intervals in enumerate(rows):
                         if all(
-                            no_overlap(interval, (s0, e0)) for s0, e0 in row_intervals
+                            no_overlap(interval, (s0, e0), pw = plot_width) for s0, e0 in row_intervals
                         ):
                             assigned_row = rid
                             row_intervals.append(interval)
@@ -667,8 +687,9 @@ def assign_label_rows(subdf, id_col,
 
     # Adding offset to ycoord
     STEP = 0.6
-    max_pr_ix = s["__pr_ix__"].max()
-    s["ycoord"] = s["ycoord"] + (max_pr_ix - s["__pr_ix__"]) * STEP
+    s["ycoord"] = s["ycoord"] + s.apply(
+        lambda r: pr_rank_map[(r["chrix"], r[PR_INDEX_COL])] * STEP, axis=1
+    )
 
     # restore multi-index
     s.set_index([PR_INDEX_COL], append=True, inplace=True)

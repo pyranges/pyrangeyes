@@ -511,6 +511,27 @@ def plot(
         subdf[START_COL] = subdf[ADJSTART_COL]
         subdf[END_COL] = subdf[ADJEND_COL]
 
+        genesmd_df = get_genes_metadata(
+            subdf,
+            ID_COL,
+            color_col,
+            packed,
+            feat_dict["exon_height"],
+            feat_dict["v_spacer"],
+            order,
+            sort,
+        )
+        
+        genesmd_df = assign_label_rows(
+            genesmd_df,
+            ID_COL,
+            PR_INDEX_COL,
+            text_pad=feat_dict["text_pad"],
+            packed=packed,
+            sort=sort,
+            plot_limits=None,  # You can pass limits if needed
+        )
+
         # recompute limits
         chrmd_df, chrmd_df_grouped = get_chromosome_metadata(
             subdf,
