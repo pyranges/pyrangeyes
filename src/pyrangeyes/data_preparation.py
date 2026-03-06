@@ -274,7 +274,7 @@ def get_genes_metadata(
         warnings.warn(
             "The Chromosome column contains mixed data types. Please ensure all values are of the same type.",
             UserWarning,
-    )
+        )
 
     # Start df with chromosome and the column defining color
     # Define the aggregation functions for each column
@@ -466,7 +466,9 @@ def get_chromosome_metadata(
     chrmd_df = chrmd_df.join(pr_top_y.rename("pr_top_y"))
     chrmd_df = (
         chrmd_df.reset_index()
-        .sort_values([CHROM_COL, "pr_top_y", PR_INDEX_COL], ascending=[True, False, True])
+        .sort_values(
+            [CHROM_COL, "pr_top_y", PR_INDEX_COL], ascending=[True, False, True]
+        )
         .set_index([CHROM_COL, PR_INDEX_COL])
     )
 
@@ -509,7 +511,8 @@ def get_chromosome_metadata(
 
     return chrmd_df, chrmd_df_grouped
 
-def no_overlap(a,  b, pad=2, pw=None):
+
+def no_overlap(a, b, pad=2, pw=None):
     """Check if two intervals a and b overlap, considering a padding."""
     if pw is not None:
         if pw > 10000:
@@ -523,14 +526,11 @@ def no_overlap(a,  b, pad=2, pw=None):
         elif pw <= 50:
             pad = 0
     return a[1] + pad <= b[0] or a[0] >= b[1] + pad
-    
 
-def assign_label_rows(subdf, id_col,
-                      PR_INDEX_COL,
-                      text_pad,
-                      packed,
-                      sort,
-                      plot_limits=None):
+
+def assign_label_rows(
+    subdf, id_col, PR_INDEX_COL, text_pad, packed, sort, plot_limits=None
+):
     """
     Assign non-overlapping ycoord rows to groups defined by (PR_INDEX_COL, id_col).
 
@@ -564,7 +564,7 @@ def assign_label_rows(subdf, id_col,
     chrom_iter = sorted(s["chrix"].unique()) if sort else pd.unique(s["chrix"])
 
     for chrom in chrom_iter:
-        current_base = 0    # reiniciate per each chromosome
+        current_base = 0  # reiniciate per each chromosome
         chrom_df = s[s["chrix"] == chrom]
 
         # Compute plot limits
@@ -625,12 +625,12 @@ def assign_label_rows(subdf, id_col,
                             **{c: v for c, v in zip(id_col, id_vals)},
                             "Start_min": g["Start"].min(),
                             "End_max": g["End"].max(),
-                    }
+                        }
                     )
 
                 gdf = pd.DataFrame(records)
 
-            rows = [] # each element = row interval
+            rows = []  # each element = row interval
             for _, g in gdf.iterrows():
                 if packed:
                     label_len = len(str(tuple(g[id_col])))
@@ -651,7 +651,8 @@ def assign_label_rows(subdf, id_col,
                     assigned_row = None
                     for rid, row_intervals in enumerate(rows):
                         if all(
-                            no_overlap(interval, (s0, e0), pw = plot_width) for s0, e0 in row_intervals
+                            no_overlap(interval, (s0, e0), pw=plot_width)
+                            for s0, e0 in row_intervals
                         ):
                             assigned_row = rid
                             row_intervals.append(interval)

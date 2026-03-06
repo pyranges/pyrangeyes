@@ -462,7 +462,7 @@ def plot(
         order,
         sort,
     )
-    
+
     genesmd_df = assign_label_rows(
         genesmd_df,
         ID_COL,
@@ -471,7 +471,7 @@ def plot(
         packed=packed,
         sort=sort,
         plot_limits=None,  # You can pass limits if needed
-   )
+    )
 
     # Create chromosome metadata DataFrame
     chrmd_df, chrmd_df_grouped = get_chromosome_metadata(
@@ -521,7 +521,7 @@ def plot(
             order,
             sort,
         )
-        
+
         genesmd_df = assign_label_rows(
             genesmd_df,
             ID_COL,
