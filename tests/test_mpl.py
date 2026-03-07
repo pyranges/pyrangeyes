@@ -145,7 +145,9 @@ def test05():
 # test +1 pr
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test06():
-    pre.plot([data2, data3], color_col="transcript_id", sort=True)  # no id col
+    pre.plot([data2, data3], color_col="transcript_id", sort=True,
+    #to_file="tests/baseline_mpl/test06.png"
+    )  # no id col
     fig = plt.gcf()
     return fig
 
@@ -168,6 +170,7 @@ def test08():
         y_labels=[1, 2, 3],
         shrink=True,
         sort=True,
+        #to_file="tests/baseline_mpl/test08.png"
     )  # shrink and y_labels
     fig = plt.gcf()
     return fig
@@ -201,6 +204,7 @@ def test11():
         data3,
         id_col="transcript_id",
         limits={"1": (None, 1000), "2": (20, 40), "3": None, "4": (-1000, None)},
+        #to_file="tests/baseline_mpl/test11.png"
     )  # limits as dict
     fig = plt.gcf()
     return fig
@@ -223,7 +227,8 @@ def test13():
         color_col="Feature",
         legend=True,
         title_chr="TITLE {chrom}",
-        sort=True
+        sort=True,
+        #to_file="tests/baseline_mpl/test13.png"
     )  # legend, title string, intron and exon color
     fig = plt.gcf()
     return fig
@@ -239,6 +244,7 @@ def test14():
         depth_col="depth",
         tooltip="{depth}",
         theme="pastel",
+        #to_file="tests/baseline_mpl/test14.png"
     )
     fig = plt.gcf()
     return fig
@@ -253,6 +259,7 @@ def test15():
         depth_col="depth",
         tooltip="{depth}",
         theme="dark",
+        #to_file="tests/baseline_mpl/test15.png"
     )
     fig = plt.gcf()
     return fig
@@ -267,6 +274,7 @@ def test16():
         depth_col="depth",
         tooltip="{depth}",
         colormap={"0": "#505050", "1": "goldenrod"},
+        #to_file="tests/baseline_mpl/test16.png"
     )  # colormap as dict
     fig = plt.gcf()
     return fig
@@ -290,7 +298,7 @@ def test18():
         id_col="transcript_id",
         packed=False,
         thick_cds=True,
-        to_file="tests/img/test18.png",
+        #to_file="tests/baseline_mpl/test18.png",
     )
     fig = plt.gcf()
     return fig

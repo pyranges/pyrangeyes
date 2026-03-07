@@ -3,6 +3,7 @@ from intervaltree import IntervalTree
 import pyranges1 as pr
 from pyranges1.core.names import CHROM_COL, START_COL, END_COL
 import pandas as pd
+import heapq
 
 # Check for matplotlib
 try:
@@ -267,6 +268,14 @@ def get_genes_metadata(
 ):
     """Create genes metadata df."""
 
+    # Check if Chromosome column has mixed types
+    chrom_dtype = pd.api.types.infer_dtype(df[CHROM_COL], skipna=True)
+    if "mixed" in chrom_dtype:
+        warnings.warn(
+            "The Chromosome column contains mixed data types. Please ensure all values are of the same type.",
+            UserWarning,
+        )
+
     # Start df with chromosome and the column defining color
     # Define the aggregation functions for each column
     agg_funcs = {
@@ -338,107 +347,6 @@ def get_genes_metadata(
     genesmd_df["gene_ix_xchrom"] = genesmd_df.groupby(
         ["chrix", PR_INDEX_COL], group_keys=False, observed=True, sort=False
     ).cumcount()
-
-    # Assign y-coordinate to genes
-    if packed:
-        genesmd_df["ycoord"] = -1
-        genesmd_df = genesmd_df.groupby(
-            [CHROM_COL, PR_INDEX_COL], group_keys=False, observed=True
-        ).apply(lambda g: genesmd_packed(g))  # add packed ycoord column
-        genesmd_df.reset_index(level=CHROM_COL, inplace=True)
-        genesmd_df = genesmd_df.groupby(CHROM_COL, observed=True).apply(
-            lambda g: update_y(g.assign(**{CHROM_COL: g.name}), exon_height, v_spacer)
-        )
-        genesmd_df.drop(CHROM_COL, axis=1, inplace=True)
-
-    else:
-        # one gene in each height
-        # Extract MultiIndex levels: chromosome, pr_ix, and the user-specified id_col(s)
-        chroms = genesmd_df.index.get_level_values(CHROM_COL)
-        pr_ix = genesmd_df.index.get_level_values(PR_INDEX_COL)
-        id_levels = [
-            genesmd_df.index.get_level_values(col).astype(str) for col in id_col
-        ]
-
-        if sort:
-            # --- SORT = True ---
-            # Build lexicographic sorting keys:
-            #   1. All id_col levels (e.g., transcript_id, second_id…)
-            #   2. pr_ix (converted to numeric codes, descending)
-            #   3. chromosome (converted to numeric codes, descending)
-            #
-            # np.lexsort applies priority from *last* to *first*,
-            # so chromosome has highest priority, then pr_ix, then id_levels.
-            keys = id_levels + [codes(pr_ix, True), codes(chroms, True)]
-
-        else:
-            # --- SORT = False ---
-            # Instead of alphabetical/numeric ordering,
-            # respect the explicit input order given by the user.
-
-            # 1) Build tuples combining all id_col levels for each row
-            id_levels = [
-                genesmd_df.index.get_level_values(col).astype(str) for col in id_col
-            ]
-            tuples_ids = list(zip(*id_levels))
-
-            # 2) Map each tuple to its position in the user-specified input order
-            order_map = {tuple(v): i for i, v in enumerate(order)}
-
-            # 3) Translate tuples into numeric codes based on input order.
-            codes_ids = np.array([order_map.get(t, len(order)) for t in tuples_ids])
-
-            # 4) Now do lexsort again, but replacing raw id_levels with codes_ids
-            #    so that sorting strictly follows the custom order.
-            keys = [codes_ids, -pr_ix.to_numpy(), codes(chroms, True)]
-
-        # Compute the row order with np.lexsort
-        order_idx = np.lexsort(keys)
-        genesmd_df = genesmd_df.iloc[order_idx]
-
-        # Assign y-coordinates: per-chromosome running index after sorting
-        genesmd_df["ycoord"] = genesmd_df.groupby(
-            CHROM_COL, group_keys=False, observed=True
-        ).cumcount()
-
-        # --- Final refinement pass ---
-        # Re-extract index values after reordering
-        chroms = genesmd_df.index.get_level_values(CHROM_COL)
-        pr_ix = genesmd_df.index.get_level_values(PR_INDEX_COL)
-        id_levels = [
-            genesmd_df.index.get_level_values(col).astype(str) for col in id_col
-        ]
-        keys2 = id_levels + [codes(pr_ix, True), codes(chroms, True)]
-        order2 = np.lexsort(keys2)
-        genesmd_df = genesmd_df.iloc[order2]
-
-        # now create col to update according to prev pr height if needed
-        # only one chromosome (no matter how many pr)
-        if len(genesmd_df.index.get_level_values(CHROM_COL).drop_duplicates()) == 1:
-            genesmd_df = genesmd_df.assign(
-                upd_yc=genesmd_df.groupby(
-                    [PR_INDEX_COL], group_keys=False, sort=False
-                ).ngroup(ascending=False)
-            )
-
-            # increase proper spacing to place pr_line
-            genesmd_df["ycoord"] += genesmd_df["upd_yc"] * (-1)
-            genesmd_df["ycoord"] += genesmd_df["upd_yc"] * (exon_height + 2 * v_spacer)
-
-        # +1 chromosome and +1 pr
-        elif len(genesmd_df.index.get_level_values(PR_INDEX_COL).drop_duplicates()) > 1:
-            genesmd_df = genesmd_df.assign(
-                upd_yc=genesmd_df.groupby(
-                    CHROM_COL, group_keys=False, sort=False
-                ).apply(
-                    lambda x: x.groupby(PR_INDEX_COL, sort=False).ngroup(
-                        ascending=False
-                    )
-                )
-            )
-            # increase proper spacing to place pr_line
-            genesmd_df["ycoord"] += genesmd_df["upd_yc"] * (-1)
-            genesmd_df["ycoord"] += genesmd_df["upd_yc"] * (exon_height + 2 * v_spacer)
 
     return genesmd_df
 
@@ -551,6 +459,19 @@ def get_chromosome_metadata(
     chrmd_limits(chrmd_df, limits)  # unknown limits are nan
     chrmd_df = chrmd_df.apply(lambda x: fill_min_max(x, ts_data), axis=1)
 
+    # Store per-pr top y and order prs by visual position (top to bottom)
+    pr_top_y = genesmd_df.groupby(
+        [CHROM_COL, PR_INDEX_COL], group_keys=False, observed=True
+    )["ycoord"].max()
+    chrmd_df = chrmd_df.join(pr_top_y.rename("pr_top_y"))
+    chrmd_df = (
+        chrmd_df.reset_index()
+        .sort_values(
+            [CHROM_COL, "pr_top_y", PR_INDEX_COL], ascending=[True, False, True]
+        )
+        .set_index([CHROM_COL, PR_INDEX_COL])
+    )
+
     chrmd_df_grouped = (
         chrmd_df.reset_index(level=PR_INDEX_COL)
         .groupby(CHROM_COL, group_keys=False, observed=True)
@@ -575,19 +496,13 @@ def get_chromosome_metadata(
     )  # the middle of the rectangle is +.5 of ycoord
 
     # Obtain the positions of lines separating pr objects
-    chrmd_df = chrmd_df.join(
-        genesmd_df.groupby([CHROM_COL, PR_INDEX_COL], group_keys=False, observed=True)[
-            "ycoord"
-        ].max()
-    )
-    chrmd_df.rename(columns={"ycoord": "pr_line"}, inplace=True)
-    chrmd_df["pr_line"] = chrmd_df.groupby(CHROM_COL, observed=True)["pr_line"].shift(
+    chrmd_df["pr_line"] = chrmd_df.groupby(CHROM_COL, observed=True)["pr_top_y"].shift(
         -1, fill_value=-(0.5 + exon_height / 2 + v_spacer)
     )
-
     chrmd_df["pr_line"] += (
         0.5 + exon_height / 2 + v_spacer
     )  # midle of rectangle is +.5 of ycoord
+    chrmd_df.drop(columns=["pr_top_y"], inplace=True)
 
     # Set chrom_ix to get the right association to the plot index
     chrmd_df_grouped["chrom_ix"] = chrmd_df_grouped.groupby(
@@ -595,3 +510,190 @@ def get_chromosome_metadata(
     ).ngroup()
 
     return chrmd_df, chrmd_df_grouped
+
+
+def no_overlap(a, b, pad=2, pw=None):
+    """Check if two intervals a and b overlap, considering a padding."""
+    if pw is not None:
+        if pw > 10000:
+            pad = 50
+        elif pw < 10000 and pw >= 1000:
+            pad = 20
+        elif pw < 1000 and pw >= 200:
+            pad = 10
+        elif pw < 200 and pw >= 50:
+            pad = 5
+        elif pw <= 50:
+            pad = 0
+    return a[1] + pad <= b[0] or a[0] >= b[1] + pad
+
+
+def assign_label_rows(
+    subdf, id_col, PR_INDEX_COL, text_pad, packed, sort, plot_limits=None
+):
+    """
+    Assign non-overlapping ycoord rows to groups defined by (PR_INDEX_COL, id_col).
+
+    - Does NOT reset the index of `subdf` (we preserve its index).
+    - If PR_INDEX_COL or id_col are not regular columns, they are extracted
+      from the index levels and used internally (no permanent index reset).
+    - Returns the original `df` with updated ycoord for the rows present in subdf.
+
+    Parameters
+    ----------
+    subdf : pd.DataFrame
+        Subset of df to compute label rows for (same index as corresponding rows in df).
+    id_col : str
+        Column name with the label text (e.g. "ID").
+    PR_INDEX_COL : str
+        Name of index level or column that contains the pyranges index (default "__pr_ix__").
+    text_pad : float
+        Fractional padding (relative to plot width). Default 0.005.
+    plot_limits : tuple(xmin, xmax) or None
+        If provided, used to compute padding scale; otherwise taken from subdf Start/End.
+    """
+    s = subdf.copy()
+    s[PR_INDEX_COL] = s.index.get_level_values(PR_INDEX_COL)
+    s = s.reset_index(level=id_col, drop=True)
+    s = s.reset_index(level=PR_INDEX_COL, drop=True)
+
+    ycoord_map = {}
+    pr_rank_map = {}
+
+    # Iterating in sorted cromosomes if sort == True else in original order
+    chrom_iter = sorted(s["chrix"].unique()) if sort else pd.unique(s["chrix"])
+
+    for chrom in chrom_iter:
+        current_base = 0  # reiniciate per each chromosome
+        chrom_df = s[s["chrix"] == chrom]
+
+        # Compute plot limits
+        if plot_limits is None:
+            xmin = float(chrom_df["Start"].min())
+            xmax = float(chrom_df["End"].max())
+        else:
+            xmin, xmax = plot_limits
+
+        plot_width = float(xmax - xmin) if xmax - xmin != 0 else 1.0
+        pad_unit = text_pad * plot_width
+
+        # Visual interval, all ranges occupies by groups connected by id_col
+        visual_spans = (
+            chrom_df.groupby([PR_INDEX_COL] + id_col, observed=True)
+            .agg(
+                VStart=("Start", "min"),
+                VEnd=("End", "max"),
+            )
+            .reset_index()
+        )
+
+        pr_iter = (
+            sorted(chrom_df[PR_INDEX_COL].unique(), reverse=True)
+            if sort
+            else pd.unique(chrom_df[PR_INDEX_COL])
+        )
+        for rank, pr_val in enumerate(pr_iter):
+            pr_rank_map[(chrom, pr_val)] = rank
+        # iterate PR_INDEX_COL in ascending order (if sort ==True)
+        for pr_val in pr_iter:
+            sub = chrom_df[chrom_df[PR_INDEX_COL] == pr_val]
+            # In case sort is true we reorder the df by start
+            if sort:
+                gdf = (
+                    sub.groupby([PR_INDEX_COL] + id_col, observed=True)
+                    .agg(Start_min=("Start", "min"), End_max=("End", "max"))
+                    .reset_index()
+                )
+            else:
+                # maintaining original order
+                seen = []
+                records = []
+
+                for _, r in sub.iterrows():
+                    key = (r[PR_INDEX_COL], tuple(r[id_col]))
+                    if key not in seen:
+                        seen.append(key)
+
+                for pr_ix, id_vals in seen:
+                    g = sub[
+                        (sub[PR_INDEX_COL] == pr_ix)
+                        & (sub[id_col].apply(tuple, axis=1) == id_vals)
+                    ]
+                    records.append(
+                        {
+                            PR_INDEX_COL: pr_ix,
+                            **{c: v for c, v in zip(id_col, id_vals)},
+                            "Start_min": g["Start"].min(),
+                            "End_max": g["End"].max(),
+                        }
+                    )
+
+                gdf = pd.DataFrame(records)
+
+            rows = []  # each element = row interval
+            for _, g in gdf.iterrows():
+                if packed:
+                    label_len = len(str(tuple(g[id_col])))
+                    # agafem l'interval VISUAL del grup connectat
+                    vsp = visual_spans[
+                        (visual_spans[PR_INDEX_COL] == g[PR_INDEX_COL])
+                        & (
+                            visual_spans[id_col].apply(tuple, axis=1)
+                            == tuple(g[id_col])
+                        )
+                    ].iloc[0]
+
+                    interval = (
+                        vsp["VStart"] - label_len * pad_unit,
+                        vsp["VEnd"],
+                    )
+
+                    assigned_row = None
+                    for rid, row_intervals in enumerate(rows):
+                        if all(
+                            no_overlap(interval, (s0, e0), pw=plot_width)
+                            for s0, e0 in row_intervals
+                        ):
+                            assigned_row = rid
+                            row_intervals.append(interval)
+                            break
+
+                    if assigned_row is None:
+                        assigned_row = len(rows)
+                        rows.append([interval])
+
+                    key = (chrom, g[PR_INDEX_COL], tuple(g[id_col]))
+                    if key not in ycoord_map:
+                        ycoord_map[key] = current_base + assigned_row
+
+                else:
+                    interval = (
+                        g["Start_min"],
+                        g["End_max"],
+                    )
+                    assigned_row = len(rows)
+                    rows.append([interval])
+
+                    key = (chrom, g[PR_INDEX_COL], tuple(g[id_col]))
+                    ycoord_map[key] = current_base + assigned_row
+
+            current_base += len(rows)
+
+    # Assign ycoord back to all rows
+    def _assign_y(r):
+        key = (r["chrix"], r[PR_INDEX_COL], tuple(r[id_col]))
+        return ycoord_map[key]
+
+    s["ycoord"] = s.apply(_assign_y, axis=1)
+
+    # Adding offset to ycoord
+    STEP = 0.6
+    s["ycoord"] = s["ycoord"] + s.apply(
+        lambda r: pr_rank_map[(r["chrix"], r[PR_INDEX_COL])] * STEP, axis=1
+    )
+
+    # restore multi-index
+    s.set_index([PR_INDEX_COL], append=True, inplace=True)
+    s.set_index(id_col, append=True, inplace=True, drop=False)
+
+    return s
